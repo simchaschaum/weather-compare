@@ -56,7 +56,6 @@ function getWeather(num, endpoint){
     xhr.responseType = 'json';
     xhr.onreadystatechange = () => {
       if(xhr.readyState===XMLHttpRequest.DONE){
-        // console.log(xhr.response);
         weatherObj = xhr.response;
         dataPrep(num, weatherObj);
       }
@@ -69,36 +68,38 @@ function getWeather(num, endpoint){
 let weather = {};
 
 function dataPrep(num,weatherObj){
-    console.log(weatherObj);
-    let name = weatherObj.name;
-    // Getting temp:
-    let tempKelvin = weatherObj.main.temp;
-    let tempFar = (tempKelvin - 273) * 1.8 + 32;
-    let tempCel = tempKelvin- 273.15;
-    // Getting humidity:
-    let humidity = weatherObj.main.humidity;
-    // Getting "real Feel:"
-    let feelsLikeKelvin = weatherObj.main.feels_like;
-    let feelsLikeFar = (feelsLikeKelvin - 273) * 1.8 + 32;
-    let feelsLikeCel = feelsLikeKelvin - 273.15;
-    // Getting weather conditions:
-    let conditionIconCode = weatherObj.weather[0].icon;
-    console.log(conditionIconCode);
- 
-    let cityObj = {
-        name: name,
-        temperature: farenheit.checked ? tempFar.toFixed(1)+String.fromCharCode(176) : tempCel.toFixed(1)+"&deg;",
-        humidity: humidity + String.fromCharCode(37),
-        feelsLike: farenheit.checked ? feelsLikeFar.toFixed(1)+String.fromCharCode(176) : feelsLikeCel.toFixed(1)+String.fromCharCode(176),
-        conditions: conditionIconCode
-    };
-    if(num === 1){
-        weather.city1 = cityObj;
+    // Error Message:
+    if(weatherObj.cod==="404"){
+        title.textContent = "Sorry! One or both of your cities can't be found."
     } else {
-        weather.city2 = cityObj;
-    }
-    if(weather.city1 != undefined && weather.city2 != undefined){
-        display(weather);
+        let name = weatherObj.name;
+        // Getting temp:
+        let tempKelvin = weatherObj.main.temp;
+        let tempFar = (tempKelvin - 273) * 1.8 + 32;
+        let tempCel = tempKelvin- 273.15;
+        // Getting humidity:
+        let humidity = weatherObj.main.humidity;
+        // Getting "real Feel:"
+        let feelsLikeKelvin = weatherObj.main.feels_like;
+        let feelsLikeFar = (feelsLikeKelvin - 273) * 1.8 + 32;
+        let feelsLikeCel = feelsLikeKelvin - 273.15;
+        // Getting weather conditions:
+        let conditionIconCode = weatherObj.weather[0].icon;
+        let cityObj = {
+            name: name,
+            temperature: farenheit.checked ? tempFar.toFixed(1)+String.fromCharCode(176) : tempCel.toFixed(1)+"&deg;",
+            humidity: humidity + String.fromCharCode(37),
+            feelsLike: farenheit.checked ? feelsLikeFar.toFixed(1)+String.fromCharCode(176) : feelsLikeCel.toFixed(1)+String.fromCharCode(176),
+            conditions: conditionIconCode
+        };
+        if(num === 1){
+            weather.city1 = cityObj;
+        } else {
+            weather.city2 = cityObj;
+        }
+        if(weather.city1 != undefined && weather.city2 != undefined){
+            display(weather);
+        }
     }
 }
 
