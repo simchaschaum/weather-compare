@@ -19,6 +19,8 @@ const tableCitySpace = document.getElementById("tableCitySpace");
 const tableCity1 = document.getElementById("tableCity1");
 const tableCity2 = document.getElementById("tableCity2");
 const tableBody = document.getElementById("tableBody");
+// Body for clicking off the modal
+const body = document.getElementById("body");
 
 // API urls - 
 const url = "https://api.openweathermap.org/data/2.5/weather?q=";
@@ -48,6 +50,10 @@ newComparison.addEventListener("click",(e)=>{
     resetChart();
     clearInputs();
 })
+// body.addEventListener("click",(e)=>{
+//     e.preventDefault();
+//     resetChart();
+// })
 
 // ***Functions:***
 // The API call:
@@ -87,7 +93,7 @@ function dataPrep(num,weatherObj){
         let conditionIconCode = weatherObj.weather[0].icon;
         let cityObj = {
             name: name,
-            temperature: farenheit.checked ? tempFar.toFixed(1)+String.fromCharCode(176) : tempCel.toFixed(1)+"&deg;",
+            temperature: farenheit.checked ? tempFar.toFixed(1)+String.fromCharCode(176) : tempCel.toFixed(1)+String.fromCharCode(176),
             humidity: humidity + String.fromCharCode(37),
             feelsLike: farenheit.checked ? feelsLikeFar.toFixed(1)+String.fromCharCode(176) : feelsLikeCel.toFixed(1)+String.fromCharCode(176),
             conditions: conditionIconCode

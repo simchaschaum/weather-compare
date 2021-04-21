@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="http://openweathermap.org/img/wn/02d@2x.png">
     <title>Weather Compare</title>
 </head>
-<body>
+<body id="body">
     <header>
         <h1> Weather Compare</h1>
     </header>
@@ -24,7 +24,7 @@
         <input type="text" id="city2" placeholder="Type city, country (2-letter abbreviation)">
         <div>
             <div id="farCel">
-                <label for="farenheit">Farenheit
+                <label for="farenheit">Farenheit 
                     <input type="radio" id="farenheit" name="farCel" value="farenheit" checked=true>
                 </label>
                 <label for="celcius">Celcius
@@ -41,12 +41,11 @@
                 <input type="checkbox" id="feelsLike" checked=true>
             </label>
         </div>
-        <input type="submit" id="submit" data-bs-toggle="modal" data-bs-target="#display">
+        <input type="submit" id="submit" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
     </form>
     
     <!-- Modal pops up when 'submit' is pressed, displays results-->
-    <div id="display" class="modal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
             <div class="modal-header">
                 <!-- In title, display: "Comparing ___ (city) with ___ (city), based on (whatever you are comparing it)" -->
@@ -81,5 +80,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
     <script src="index.js"></script>
+
 </body>
 </html>
