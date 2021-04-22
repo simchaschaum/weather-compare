@@ -1,4 +1,7 @@
 // ***DOM Objects:***
+// Input for choosing lookup type:
+const current = document.getElementById("current");
+const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
 const city1 = document.getElementById("city1");
 const city2 = document.getElementById("city2");
@@ -23,23 +26,27 @@ const tableBody = document.getElementById("tableBody");
 const body = document.getElementById("body");
 
 // API urls - 
-const url = "https://api.openweathermap.org/data/2.5/weather?q=";
+// Openweathermap
 const apiPrefix = "&APPID="
 const apiKey = "2e293695acd59dd8de6e33f2e330cf8b";
+// Positionstack api
+const urlPs = "http://api.positionstack.com/v1/forward?access_key=";
+const psApiKey = "e3494ffc53b658274332f7aeb9a564c8";
+const psQuery = "&query="
 
 // *** Event Listeners: ***
 submit.addEventListener("click", (e)=>{
     e.preventDefault();
-    // if(!temp.checked && !humid.checked && !feelsLike.checked){
-        // title.textContent = "Please check at least one box for comparison."
-    // } else {
-        if(city1.value === "" || city2.value === ""){
-            title.textContent = "Whoops! Looks like you're missing some info."
-        } else {
-            getCurrentWeather(1,url+city1.value+apiPrefix+apiKey);
-            getCurrentWeather(2,url+city2.value+apiPrefix+apiKey);
-        }
-    // }
+    // clear the table header now, in case something goes wrong:
+    tableCity1.textContent = "";
+    tableCity2.textContent = "";
+    title.textContent = "";
+     if(city1.value === "" || city2.value === ""){
+         title.textContent = "Whoops! Looks like you're missing some info."
+     } else {
+         getLatLong(1);
+         getLatLong(2);
+     }
 })
 x.addEventListener("click",(e)=>{
     e.preventDefault();
@@ -50,24 +57,59 @@ newComparison.addEventListener("click",(e)=>{
     resetChart();
     clearInputs();
 })
-body.addEventListener("click",(e)=>{
-    e.preventDefault();
-})
 
 // ***Functions:***
+// API call for latitude and longitude (for either info:)
+let latitude;
+let longitude;
+function getLatLong(num){
+    let city = num === 1 ? city1.value : city2.value;
+    fetch(urlPs+psApiKey+psQuery+city)
+        .then(response => response.json())
+        .then(data => {
+            if(!data.data[0].latitude || !data.data[0].latitude){
+                getLatLong(num)
+            } else {
+                latitude = data.data[0].latitude.toFixed(2);
+                longitude = data.data[0].longitude.toFixed(2);
+                if(current.checked){
+                    getCurrentWeather(num,latitude,longitude);
+                } else {
+                    getHistWeather(num,latitude,longitude);
+                }
+            }
+        })
+}
 // The API call for current weather:
-function getCurrentWeather(num, endpoint){
-    fetch(endpoint) 
+function getCurrentWeather(num, latitude,longitude){
+    let url = "https://api.openweathermap.org/data/2.5/weather?lat=";
+    let lon = "&lon=";
+    fetch(url+latitude+lon+longitude+apiPrefix+apiKey) 
     .then(response => response.json()) 
     .then(data => {  
         weatherObj = data;
         dataPrep(num, weatherObj);
     })
 }
+// The API calls for 5 day history:
+let historyObj = {};
 
-// The API call for 5 day history:
-function getHistWeather(num,endpoint){
-    
+function getHistWeather(num,latitude,longitude){  
+    let url = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=";
+    historyObj[num] = [];
+    for(var i = 5; i > 0; i--){
+        let year = new Date().getFullYear();
+        let month = new Date().getMonth();
+        let day = new Date().getDate()-i;
+        let date = Date.UTC(year,month,day)/1000;
+        fetch(url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey)
+        .then(response => response.json())
+        .then(data => {
+            weatherObj = data;
+            historyObj[num].push(weatherObj);
+            console.log(historyObj);
+        })
+    }
 }
 
 // Initializing weather object for dataPrep function:
