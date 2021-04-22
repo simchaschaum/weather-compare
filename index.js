@@ -36,8 +36,8 @@ submit.addEventListener("click", (e)=>{
         if(city1.value === "" || city2.value === ""){
             title.textContent = "Whoops! Looks like you're missing some info."
         } else {
-            getWeather(1,url+city1.value+apiPrefix+apiKey);
-            getWeather(2,url+city2.value+apiPrefix+apiKey);
+            getCurrentWeather(1,url+city1.value+apiPrefix+apiKey);
+            getCurrentWeather(2,url+city2.value+apiPrefix+apiKey);
         }
     // }
 })
@@ -50,24 +50,24 @@ newComparison.addEventListener("click",(e)=>{
     resetChart();
     clearInputs();
 })
-// body.addEventListener("click",(e)=>{
-//     e.preventDefault();
-//     resetChart();
-// })
+body.addEventListener("click",(e)=>{
+    e.preventDefault();
+})
 
 // ***Functions:***
-// The API call:
-function getWeather(num, endpoint){
-    const xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    xhr.onreadystatechange = () => {
-      if(xhr.readyState===XMLHttpRequest.DONE){
-        weatherObj = xhr.response;
+// The API call for current weather:
+function getCurrentWeather(num, endpoint){
+    fetch(endpoint) 
+    .then(response => response.json()) 
+    .then(data => {  
+        weatherObj = data;
         dataPrep(num, weatherObj);
-      }
-    }
-    xhr.open('GET',endpoint);
-    xhr.send();
+    })
+}
+
+// The API call for 5 day history:
+function getHistWeather(num,endpoint){
+    
 }
 
 // Initializing weather object for dataPrep function:
@@ -205,14 +205,8 @@ function clearInputs(){
     city2.value = "";
 }
 
-/* To do:
-1) * Title in JS - "comparing..."
-2) Design answer display
-- * What it will look like
-- [What data can we get more than this minute? ] https://openweathermap.org/api/one-call-api#history
-- *finish function display - how to display the data
-- * on form, put radio buttons for fareinheit and celcius 
-- for "new comparison - delete rows in table "  - use myObject.remove()  - https://www.w3schools.com/jsref/met_element_remove.asp
-3) Get list of cities and put in dropdown
-*/
+// 5-day History:
+
+
+
 
