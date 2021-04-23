@@ -37,10 +37,6 @@ const psQuery = "&query="
 // *** Event Listeners: ***
 submit.addEventListener("click", (e)=>{
     e.preventDefault();
-    // clear the table header now, in case something goes wrong:
-    tableCity1.textContent = "";
-    tableCity2.textContent = "";
-    title.textContent = "";
      if(city1.value === "" || city2.value === ""){
          title.textContent = "Whoops! Looks like you're missing some info."
      } else {
@@ -91,27 +87,6 @@ function getCurrentWeather(num, latitude,longitude){
         dataPrep(num, weatherObj);
     })
 }
-// The API calls for 5 day history:
-let historyObj = {};
-
-function getHistWeather(num,latitude,longitude){  
-    let url = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=";
-    historyObj[num] = [];
-    for(var i = 5; i > 0; i--){
-        let year = new Date().getFullYear();
-        let month = new Date().getMonth();
-        let day = new Date().getDate()-i;
-        let date = Date.UTC(year,month,day)/1000;
-        fetch(url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey)
-        .then(response => response.json())
-        .then(data => {
-            weatherObj = data;
-            historyObj[num].push(weatherObj);
-            console.log(historyObj);
-        })
-    }
-}
-
 // Initializing weather object for dataPrep function:
 let weather = {};
 
@@ -237,9 +212,43 @@ function display(weather){
     }
 }
 
+// The API calls for 5 day history:
+let historyObj = {};
+
+function getHistWeather(num,latitude,longitude){  
+    let url = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=";
+    historyObj[num] = [];
+    for(var i = 5; i > 0; i--){
+        let year = new Date().getFullYear();
+        let month = new Date().getMonth();
+        let day = new Date().getDate()-i;
+        let date = Date.UTC(year,month,day)/1000;
+        fetch(url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey)
+        .then(response => response.json())
+        .then(data => {
+            weatherObj = data;
+            historyObj[num].push(weatherObj);
+        })
+    }
+    if(num===2){
+        historyAnalysis(historyObj);
+    }
+}
+
+function historyAnalysis(obj){
+    let highTemp = 0;
+    obj["1"].hourly.forEach(item => {
+        
+    })
+}
+
+// ********** Clean Up: **********
 function resetChart(){
     while(tableBody.firstChild){
         tableBody.removeChild(tableBody.firstChild);
+        tableCity1.textContent = "";
+        tableCity2.textContent = "";
+        title.textContent = "";
     }
 }
 function clearInputs(){
