@@ -53,6 +53,10 @@ newComparison.addEventListener("click",(e)=>{
     resetChart();
     clearInputs();
 })
+// body.addEventListener("click",(e)=>{
+//     e.preventDefault();
+//     resetChart();
+// })
 
 // ***Functions:***
 // API call for latitude and longitude (for either info:)
