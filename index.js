@@ -3,8 +3,10 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
-const city1 = document.getElementById("city1");
-const city2 = document.getElementById("city2");
+// const city1 = document.getElementById("city1"); restore after development
+// const city2 = document.getElementById("city2"); restore after develoipment 
+const city1 = {value: "bet shemesh, il"};  // remove after development
+const city2 = {value: "teaneck, nj"};  // remove after development
 // Radio inputs for F/C:
 const farenheit = document.getElementById("farenheit");
 const celcius = document.getElementById("celcius");
@@ -53,10 +55,6 @@ newComparison.addEventListener("click",(e)=>{
     resetChart();
     clearInputs();
 })
-// body.addEventListener("click",(e)=>{
-//     e.preventDefault();
-//     resetChart();
-// })
 
 // ***Functions:***
 // API call for latitude and longitude (for either info:)
@@ -217,33 +215,65 @@ function display(weather){
 }
 
 // The API calls for 5 day history:
-let historyObj = {};
+let historyObjPlace1 = {};
+let historyObjPlace2 = {};
 
-function getHistWeather(num,latitude,longitude){  
+function getHistWeather(placeNum,latitude,longitude){  
     let url = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=";
-    historyObj[num] = [];
     for(var i = 5; i > 0; i--){
         let year = new Date().getFullYear();
         let month = new Date().getMonth();
         let day = new Date().getDate()-i;
         let date = Date.UTC(year,month,day)/1000;
-        fetch(url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey)
-        .then(response => response.json())
-        .then(data => {
-            weatherObj = data;
-            historyObj[num].push(weatherObj);
-        })
-    }
-    if(num===2){
-        historyAnalysis(historyObj);
+        // Creates the URL and sends to the function that makes the API call and constructs the object:
+        histWeatherCall(placeNum,i,url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey);
     }
 }
 
-function historyAnalysis(obj){
+// The actual API call.  
+function histWeatherCall(placeNum,dayNum,url){
+    let day = dayNum.toString();
+    let place = placeNum.toString();
+    // console.log(historyObj);
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if(placeNum === 1){
+                historyObjPlace1[day] = data;
+                getHighs(placeNum, day, historyObjPlace1[day].hourly);
+            } else {
+                historyObjPlace2[day] = data;
+                // getHighs(historyObjPlace2[day].hourly);
+            }
+        })
+}
+
+// Pulls apart and analyzes the data:
+function getHighs(placeNum, day, arr){
+    // each arr is a different day and place.  It has an object with temp, feels_like, and humidity. 
     let highTemp = 0;
-    obj["1"].hourly.forEach(item => {
-        
+    let highHumidity = 0;
+    let highFeelsLike = 0;
+    arr.forEach(hour => {
+        highTemp = hour.temp > highTemp ? hour.temp : highTemp;
+        highHumidity = hour.humidity > highHumidity ? hour.humidity : highHumidity;
+        highFeelsLike = hour.feels_like > highFeelsLike ? hour.feels_like : highFeelsLike;
     })
+    // console.log(`Day ${day}, placeNum ${placeNum}, high temp = ${highTemp}
+    // high humidity = ${highHumidity}, and high feels like = ${highFeelsLike}`)
+    if(placeNum === 1){
+        historyObjPlace1["highs"] = {
+            temp: highTemp,
+            humidity: highHumidity,
+            feelsLike: highFeelsLike
+        }
+    } else {
+        historyObjPlace2["highs"] = {
+            temp: highTemp,
+            humidity: highHumidity,
+            feelsLike: highFeelsLike
+        }
+    }
 }
 
 // ********** Clean Up: **********
