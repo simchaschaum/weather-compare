@@ -69,15 +69,18 @@ function getLatLong(num){
             // if(!data.data[0].latitude || !data.data[0].latitude){
             //     getLatLong(num)
             // } else {
-            //     latitude = data.data[0].latitude.toFixed(2);
-            //     longitude = data.data[0].longitude.toFixed(2);
-            //     if(current.checked){
-            //         getCurrentWeather(num,latitude,longitude);
-            //     } else {
-            //         getHistWeather(num,latitude,longitude);
-            //     }
+                // latitude = data.data[0].latitude.toFixed(2);
+                latitude = data.results[0].locations[0].latLng.lat.toFixed(2);
+                // longitude = data.data[0].longitude.toFixed(2);
+                longitude = data.results[0].locations[0].latLng.lng.toFixed(2);
+                if(current.checked){
+                    getCurrentWeather(num,latitude,longitude);
+                } else {
+                    getHistWeather(num,latitude,longitude);
+                }
             // }
-            console.log(data)
+            console.log(data.results[0].locations[0].latLng)
+            // TRY DESTRUCTURING?
         })
 }
 // The API call for current weather:
