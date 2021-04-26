@@ -3,10 +3,10 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
-const city1 = document.getElementById("city1"); 
-const city2 = document.getElementById("city2"); 
-// const city1 = {value: "bet shemesh, il"};  // remove after development
-// const city2 = {value: "teaneck, nj"};  // remove after development
+// const city1 = document.getElementById("city1"); 
+// const city2 = document.getElementById("city2"); 
+const city1 = {value: "bet shemesh, il"};  // remove after development
+const city2 = {value: "teaneck, nj"};  // remove after development
 // Radio inputs for F/C:
 const farenheit = document.getElementById("farenheit");
 const celcius = document.getElementById("celcius");
@@ -32,9 +32,10 @@ const body = document.getElementById("body");
 const apiPrefix = "&APPID="
 const apiKey = "2e293695acd59dd8de6e33f2e330cf8b";
 // Positionstack api
-const urlPs = "http://api.positionstack.com/v1/forward?access_key=";
-const psApiKey = "e3494ffc53b658274332f7aeb9a564c8";
-const psQuery = "&query="
+// const urlPs = "http://api.positionstack.com/v1/forward?access_key=";
+// const psApiKey = "e3494ffc53b658274332f7aeb9a564c8";
+// const psQuery = "&query="
+const mqURLandKey = "http://mapquestapi.com/geocoding/v1/address?key=yfoCj2ojrHIAyBg2gWoSqLazwjqalUMg&location="
 
 // *** Event Listeners: ***
 submit.addEventListener("click", (e)=>{
@@ -62,20 +63,21 @@ let latitude;
 let longitude;
 function getLatLong(num){
     let city = num === 1 ? city1.value : city2.value;
-    fetch(urlPs+psApiKey+psQuery+city)
+    fetch(mqURLandKey+city)
         .then(response => response.json())
         .then(data => {
-            if(!data.data[0].latitude || !data.data[0].latitude){
-                getLatLong(num)
-            } else {
-                latitude = data.data[0].latitude.toFixed(2);
-                longitude = data.data[0].longitude.toFixed(2);
-                if(current.checked){
-                    getCurrentWeather(num,latitude,longitude);
-                } else {
-                    getHistWeather(num,latitude,longitude);
-                }
-            }
+            // if(!data.data[0].latitude || !data.data[0].latitude){
+            //     getLatLong(num)
+            // } else {
+            //     latitude = data.data[0].latitude.toFixed(2);
+            //     longitude = data.data[0].longitude.toFixed(2);
+            //     if(current.checked){
+            //         getCurrentWeather(num,latitude,longitude);
+            //     } else {
+            //         getHistWeather(num,latitude,longitude);
+            //     }
+            // }
+            console.log(data)
         })
 }
 // The API call for current weather:
@@ -214,13 +216,13 @@ function display(weather){
     }
 }
 
-// The API calls for 5 day history:
+// The API calls for 3 day history:
 let historyObjPlace1 = {};
 let historyObjPlace2 = {};
 
 function getHistWeather(placeNum,latitude,longitude){  
     let url = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=";
-    for(var i = 5; i > 0; i--){
+    for(var i = 3; i > 0; i--){
         let year = new Date().getFullYear();
         let month = new Date().getMonth();
         let day = new Date().getDate()-i;
@@ -276,19 +278,57 @@ function getHighs(placeNum, day, arr){
     }
 }
 
-// ********** Clean Up: **********
-function resetChart(){
-    while(tableBody.firstChild){
-        tableBody.removeChild(tableBody.firstChild);
-        tableCity1.textContent = "";
-        tableCity2.textContent = "";
-        title.textContent = "";
-    }
-}
-function clearInputs(){
-    city1.value = "";
-    city2.value = "";
-}
+// *** line chart **
+// var ctx = document.getElementById('chart');
+// var myChart = new Chart(ctx, {
+//     type: 'bar',
+//     data: {
+//         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+//         datasets: [{
+//             label: '# of Votes',
+//             data: [12, 19, 3, 5, 2, 3],
+//             backgroundColor: [
+//                 'rgba(255, 99, 132, 0.2)',
+//                 'rgba(54, 162, 235, 0.2)',
+//                 'rgba(255, 206, 86, 0.2)',
+//                 'rgba(75, 192, 192, 0.2)',
+//                 'rgba(153, 102, 255, 0.2)',
+//                 'rgba(255, 159, 64, 0.2)'
+//             ],
+//             borderColor: [
+//                 'rgba(255, 99, 132, 1)',
+//                 'rgba(54, 162, 235, 1)',
+//                 'rgba(255, 206, 86, 1)',
+//                 'rgba(75, 192, 192, 1)',
+//                 'rgba(153, 102, 255, 1)',
+//                 'rgba(255, 159, 64, 1)'
+//             ],
+//             borderWidth: 1
+//         }]
+//     },
+//     options: {
+//         scales: {
+//             y: {
+//                 beginAtZero: true
+//             }
+//         }
+//     }
+// });
+
+
+// // ********** Clean Up: **********
+// function resetChart(){
+//     while(tableBody.firstChild){
+//         tableBody.removeChild(tableBody.firstChild);
+//         tableCity1.textContent = "";
+//         tableCity2.textContent = "";
+//         title.textContent = "";
+//     }
+// }
+// function clearInputs(){
+//     city1.value = "";
+//     city2.value = "";
+// }
 
 // 5-day History:
 
