@@ -3,10 +3,10 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
-// const city1 = document.getElementById("city1"); 
-// const city2 = document.getElementById("city2"); 
-const city1 = {value: "bet shemesh, il"};  // remove after development
-const city2 = {value: "teaneck, nj"};  // remove after development
+const city1 = document.getElementById("city1"); 
+const city2 = document.getElementById("city2"); 
+// const city1 = {value: "bet shemesh, il"};  // remove after development
+// const city2 = {value: "teaneck, nj"};  // remove after development
 // Radio inputs for F/C:
 const farenheit = document.getElementById("farenheit");
 const celcius = document.getElementById("celcius");
@@ -31,11 +31,12 @@ const body = document.getElementById("body");
 // Openweathermap
 const apiPrefix = "&APPID="
 const apiKey = "2e293695acd59dd8de6e33f2e330cf8b";
-// Positionstack api
-// const urlPs = "http://api.positionstack.com/v1/forward?access_key=";
-// const psApiKey = "e3494ffc53b658274332f7aeb9a564c8";
-// const psQuery = "&query="
-const mqURLandKey = "http://mapquestapi.com/geocoding/v1/address?key=yfoCj2ojrHIAyBg2gWoSqLazwjqalUMg&location="
+//  api for longitude/ latitude 
+const geocodeToken2 = "pk.7c752c8d33acc057c62397f44df6a292";
+const geocodeEndPoint1 = "https://us1.locationiq.com/v1/search.php?key=";
+const geocodeEndPoint3 = "&q="; // search string comes next
+const geocodeEndPoint5 = "&format=json"
+
 
 // *** Event Listeners: ***
 submit.addEventListener("click", (e)=>{
@@ -63,24 +64,17 @@ let latitude;
 let longitude;
 function getLatLong(num){
     let city = num === 1 ? city1.value : city2.value;
-    fetch(mqURLandKey+city)
+    fetch(geocodeEndPoint1+geocodeToken2+geocodeEndPoint3+city+geocodeEndPoint5)
         .then(response => response.json())
         .then(data => {
-            // if(!data.data[0].latitude || !data.data[0].latitude){
-            //     getLatLong(num)
-            // } else {
-                // latitude = data.data[0].latitude.toFixed(2);
-                latitude = data.results[0].locations[0].latLng.lat.toFixed(2);
-                // longitude = data.data[0].longitude.toFixed(2);
-                longitude = data.results[0].locations[0].latLng.lng.toFixed(2);
-                if(current.checked){
-                    getCurrentWeather(num,latitude,longitude);
-                } else {
-                    getHistWeather(num,latitude,longitude);
-                }
-            // }
-            console.log(data.results[0].locations[0].latLng)
-            // TRY DESTRUCTURING?
+            console.log(data[0]);
+            let latitude = data[0].lat;
+            let longitude = data[0].lon;
+            if(current.checked){
+                getCurrentWeather(num,latitude,longitude);
+            } else {
+                getHistWeather(num,latitude,longitude);
+            }
         })
 }
 // The API call for current weather:
@@ -91,6 +85,7 @@ function getCurrentWeather(num, latitude,longitude){
     .then(response => response.json()) 
     .then(data => {  
         weatherObj = data;
+        console.log(weatherObj);
         dataPrep(num, weatherObj);
     })
 }
@@ -320,18 +315,18 @@ function getHighs(placeNum, day, arr){
 
 
 // // ********** Clean Up: **********
-// function resetChart(){
-//     while(tableBody.firstChild){
-//         tableBody.removeChild(tableBody.firstChild);
-//         tableCity1.textContent = "";
-//         tableCity2.textContent = "";
-//         title.textContent = "";
-//     }
-// }
-// function clearInputs(){
-//     city1.value = "";
-//     city2.value = "";
-// }
+function resetChart(){
+    while(tableBody.firstChild){
+        tableBody.removeChild(tableBody.firstChild);
+        tableCity1.textContent = "";
+        tableCity2.textContent = "";
+        title.textContent = "";
+    }
+}
+function clearInputs(){
+    city1.value = "";
+    city2.value = "";
+}
 
 // 5-day History:
 
