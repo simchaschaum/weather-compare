@@ -140,11 +140,11 @@ function display(weather){
     th.appendChild(textNode);
     let td1 = document.createElement("td");
     let img1 = document.createElement("img");
-    img1.src = "http://openweathermap.org/img/wn/" + weather.city1.conditions + "@2x.png";
+    img1.src = "https://openweathermap.org/img/wn/" + weather.city1.conditions + "@2x.png";
     td1.appendChild(img1);
     let td2 = document.createElement("td");
     let img2 = document.createElement("img");
-    img2.src = "http://openweathermap.org/img/wn/" + weather.city2.conditions + "@2x.png";
+    img2.src = "https://openweathermap.org/img/wn/" + weather.city2.conditions + "@2x.png";
     td2.appendChild(img2);
     let tr = document.createElement("tr");
     tr.appendChild(th);
