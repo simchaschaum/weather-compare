@@ -3,10 +3,10 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
-const city1 = document.getElementById("city1"); 
-const city2 = document.getElementById("city2"); 
-// const city1 = {value: "bet shemesh, il"};  // remove after development
-// const city2 = {value: "teaneck, nj"};  // remove after development
+// const city1 = document.getElementById("city1"); 
+// const city2 = document.getElementById("city2"); 
+const city1 = {value: "bet shemesh, il"};  // remove after development
+const city2 = {value: "teaneck, nj"};  // remove after development
 // Radio inputs for F/C:
 const farenheit = document.getElementById("farenheit");
 const celcius = document.getElementById("celcius");
@@ -67,7 +67,6 @@ function getLatLong(num){
     fetch(geocodeEndPoint1+geocodeToken2+geocodeEndPoint3+city+geocodeEndPoint5)
         .then(response => response.json())
         .then(data => {
-            console.log(data[0]);
             let latitude = data[0].lat;
             let longitude = data[0].lon;
             if(current.checked){
@@ -85,7 +84,6 @@ function getCurrentWeather(num, latitude,longitude){
     .then(response => response.json()) 
     .then(data => {  
         weatherObj = data;
-        console.log(weatherObj);
         dataPrep(num, weatherObj);
     })
 }
@@ -220,7 +218,7 @@ let historyObjPlace2 = {};
 
 function getHistWeather(placeNum,latitude,longitude){  
     let url = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=";
-    for(var i = 3; i > 0; i--){
+    for(var i = 3; i >0; i--){  
         let year = new Date().getFullYear();
         let month = new Date().getMonth();
         let day = new Date().getDate()-i;
@@ -243,7 +241,7 @@ function histWeatherCall(placeNum,dayNum,url){
                 getHighs(placeNum, day, historyObjPlace1[day].hourly);
             } else {
                 historyObjPlace2[day] = data;
-                // getHighs(historyObjPlace2[day].hourly);
+                getHighs(placeNum, day, historyObjPlace2[day].hourly);
             }
         })
 }
@@ -262,18 +260,20 @@ function getHighs(placeNum, day, arr){
     // console.log(`Day ${day}, placeNum ${placeNum}, high temp = ${highTemp}
     // high humidity = ${highHumidity}, and high feels like = ${highFeelsLike}`)
     if(placeNum === 1){
-        historyObjPlace1["highs"] = {
+        historyObjPlace1[day]["highs"] = {
             temp: highTemp,
             humidity: highHumidity,
             feelsLike: highFeelsLike
         }
     } else {
-        historyObjPlace2["highs"] = {
+        historyObjPlace2[day]["highs"] = {
             temp: highTemp,
             humidity: highHumidity,
             feelsLike: highFeelsLike
         }
     }
+    console.log(historyObjPlace1)
+    console.log(historyObjPlace2)
 }
 
 // *** line chart **
