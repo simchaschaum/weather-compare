@@ -31,10 +31,12 @@ const body = document.getElementById("body");
 // Openweathermap
 const apiPrefix = "&APPID="
 const apiKey = "2e293695acd59dd8de6e33f2e330cf8b";
-// Positionstack api
-const urlPs = "http://api.positionstack.com/v1/forward?access_key=";
-const psApiKey = "e3494ffc53b658274332f7aeb9a564c8";
-const psQuery = "&query="
+//  api for longitude/ latitude 
+const geocodeToken2 = "pk.7c752c8d33acc057c62397f44df6a292";
+const geocodeEndPoint1 = "https://us1.locationiq.com/v1/search.php?key=";
+const geocodeEndPoint3 = "&q="; // search string comes next
+const geocodeEndPoint5 = "&format=json"
+
 
 // *** Event Listeners: ***
 submit.addEventListener("click", (e)=>{
@@ -62,19 +64,16 @@ let latitude;
 let longitude;
 function getLatLong(num){
     let city = num === 1 ? city1.value : city2.value;
-    fetch(urlPs+psApiKey+psQuery+city)
+    fetch(geocodeEndPoint1+geocodeToken2+geocodeEndPoint3+city+geocodeEndPoint5)
         .then(response => response.json())
         .then(data => {
-            if(!data.data[0].latitude || !data.data[0].latitude){
-                getLatLong(num)
+            console.log(data[0]);
+            let latitude = data[0].lat;
+            let longitude = data[0].lon;
+            if(current.checked){
+                getCurrentWeather(num,latitude,longitude);
             } else {
-                latitude = data.data[0].latitude.toFixed(2);
-                longitude = data.data[0].longitude.toFixed(2);
-                if(current.checked){
-                    getCurrentWeather(num,latitude,longitude);
-                } else {
-                    getHistWeather(num,latitude,longitude);
-                }
+                getHistWeather(num,latitude,longitude);
             }
         })
 }
@@ -86,6 +85,7 @@ function getCurrentWeather(num, latitude,longitude){
     .then(response => response.json()) 
     .then(data => {  
         weatherObj = data;
+        console.log(weatherObj);
         dataPrep(num, weatherObj);
     })
 }
@@ -140,11 +140,11 @@ function display(weather){
     th.appendChild(textNode);
     let td1 = document.createElement("td");
     let img1 = document.createElement("img");
-    img1.src = "http://openweathermap.org/img/wn/" + weather.city1.conditions + "@2x.png";
+    img1.src = "https://openweathermap.org/img/wn/" + weather.city1.conditions + "@2x.png";
     td1.appendChild(img1);
     let td2 = document.createElement("td");
     let img2 = document.createElement("img");
-    img2.src = "http://openweathermap.org/img/wn/" + weather.city2.conditions + "@2x.png";
+    img2.src = "https://openweathermap.org/img/wn/" + weather.city2.conditions + "@2x.png";
     td2.appendChild(img2);
     let tr = document.createElement("tr");
     tr.appendChild(th);
@@ -214,13 +214,13 @@ function display(weather){
     }
 }
 
-// The API calls for 5 day history:
+// The API calls for 3 day history:
 let historyObjPlace1 = {};
 let historyObjPlace2 = {};
 
 function getHistWeather(placeNum,latitude,longitude){  
     let url = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=";
-    for(var i = 5; i > 0; i--){
+    for(var i = 3; i > 0; i--){
         let year = new Date().getFullYear();
         let month = new Date().getMonth();
         let day = new Date().getDate()-i;
@@ -276,7 +276,45 @@ function getHighs(placeNum, day, arr){
     }
 }
 
-// ********** Clean Up: **********
+// *** line chart **
+// var ctx = document.getElementById('chart');
+// var myChart = new Chart(ctx, {
+//     type: 'bar',
+//     data: {
+//         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+//         datasets: [{
+//             label: '# of Votes',
+//             data: [12, 19, 3, 5, 2, 3],
+//             backgroundColor: [
+//                 'rgba(255, 99, 132, 0.2)',
+//                 'rgba(54, 162, 235, 0.2)',
+//                 'rgba(255, 206, 86, 0.2)',
+//                 'rgba(75, 192, 192, 0.2)',
+//                 'rgba(153, 102, 255, 0.2)',
+//                 'rgba(255, 159, 64, 0.2)'
+//             ],
+//             borderColor: [
+//                 'rgba(255, 99, 132, 1)',
+//                 'rgba(54, 162, 235, 1)',
+//                 'rgba(255, 206, 86, 1)',
+//                 'rgba(75, 192, 192, 1)',
+//                 'rgba(153, 102, 255, 1)',
+//                 'rgba(255, 159, 64, 1)'
+//             ],
+//             borderWidth: 1
+//         }]
+//     },
+//     options: {
+//         scales: {
+//             y: {
+//                 beginAtZero: true
+//             }
+//         }
+//     }
+// });
+
+
+// // ********** Clean Up: **********
 function resetChart(){
     while(tableBody.firstChild){
         tableBody.removeChild(tableBody.firstChild);
