@@ -72,6 +72,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="x"></button>
             </div>
             <div class="modal-body">
+                <!-- Chart for 3-day history -->
                 <div id="chartDiv"> 
                     <!-- Will add the canvas element in JavaScript here.-->
                     <!-- Spinner for promises: -->
@@ -81,10 +82,10 @@
                         </div>
                     </div>
                 </div>
-                <table class="table">
+                <table id="table" class="table hide">
                     <!-- Names of cities in table head to be populated by JS -->
                     <thead>
-                        <th scope="col" id="tableCitySpace">City:</th>
+                        <th scope="col" id="tableCitySpace"></th>
                         <th scope="col" id="tableCity1"></th>
                         <th scope="col" id="tableCity2"></th>
                     </thead>

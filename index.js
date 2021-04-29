@@ -21,6 +21,7 @@ const newComparison = document.getElementById("newComparison");
 // Display for answers: 
 const title = document.getElementById("displayTitle");
 const titleDiv = document.getElementById("titleDiv");
+const table = document.getElementById("table");
 const tableCitySpace = document.getElementById("tableCitySpace");
 const tableCity1 = document.getElementById("tableCity1");
 const tableCity2 = document.getElementById("tableCity2");
@@ -151,11 +152,14 @@ function dataPrep(num,weatherObj){
 function display(weather){
     // turn off spinner:
     spinnerShowHide(false);
+    // Making table visible:
+    table.classList.remove("hide");
     // Setting the title:
     let measure = temp.checked ? "Temperature"
         : humid.checked ? "Humidity" : "'Real-Feel' Temperature";
     title.textContent = `Comparing the Current Conditions and ${measure} of ${weather.city1.name} and ${weather.city2.name}`
     // Setting table headers:
+    tableCitySpace.textContent = "City"
     tableCity1.textContent = weather.city1.name;
     tableCity2.textContent = weather.city2.name;
     // Create row for conditions icon:
@@ -406,7 +410,6 @@ let stormIcon;
 function errorMessage(){
     title.textContent = "Sorry! Something went wrong.";
     if(!document.body.contains(stormIcon)){
-        console.log("yup");
         stormIcon = document.createElement("img");
         stormIcon.src = "http://openweathermap.org/img/wn/11d@2x.png";
         stormIcon.classList.add("storm");
@@ -431,6 +434,7 @@ function resetChart(){
         tableCity1.textContent = "";
         tableCity2.textContent = "";
     }
+    table.classList.add("hide");
     title.textContent = "";
     if(!!stormIcon){
         stormIcon.remove();

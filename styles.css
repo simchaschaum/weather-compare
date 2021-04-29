@@ -120,6 +120,9 @@ input#submit:hover{
 .show{
     visibility: visible;
 }
+.hide{
+    visibility: hidden;
+}
 td img{
     width: 50px;
     height: auto;
