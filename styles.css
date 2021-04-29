@@ -51,11 +51,12 @@ form#form{
     display: flex;
     flex-direction: column;
 }
+
 #type{
     display: flex;
     flex-direction: row;
 }
-.label {
+label {
     margin-right: 15px;
 } 
 form#form > *{
@@ -67,23 +68,31 @@ form#form > *{
         width: 90%
     }
 }
+form#form>div{
+    background-color: var(--clr-white);
+    color: var(--clr-dark);
+    border-radius: 3px;
+    padding: 10px;
+}
+
+form#form p {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+#farCel{
+    margin-bottom: 1em;
+}
+div#compare{
+    display: flex;
+    justify-content: flex-start;
+}
 input[type=text]{
     border: none;
     height: 40px;
     border-radius: 3px;
     padding: 5px;
 }
-form#form>div{
-    background-color: var(--clr-white);
-    color: var(--clr-dark);
-    display: flex;
-    flex-direction: column;
-    border-radius: 3px;
-    padding: 10px;
-}
-form#form div>*{
-    margin: 5px 0px;
-}
+
 input#submit{
     width: 100px;
     border: none;
@@ -91,6 +100,10 @@ input#submit{
     height: 40px;
     color: var(--clr-dark);
     font-size: 16px;
+}
+input#submit:hover{
+    background-color: var(--clr-dark);
+    color: var(--clr-white);
 }
 
 /* The Results Display: */

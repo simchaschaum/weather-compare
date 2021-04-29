@@ -22,19 +22,21 @@
 
     <form action="" id="form">
         <div>
-            <div id="type">
+            <p>Compare:</p>
+            <div id="compare">
                 <label for="current">Current Weather
                     <input type="radio" name="lookUp" id="current" value="current">
                 </label>
-                <label for="current">Past 3 Days (coming soon!)
+                <label for="current">Past 3 Days
                     <input type="radio" name="lookUp" id="histWeather" value="histWeather"  checked=true>
                 </label>
             </div>
         </div>
-        <input type="text" id="city1" placeholder="city, US state or country">
-        <input type="text" id="city2" placeholder="city, US state or country">
+        <input type="text" id="city1" placeholder="Type any location.">
+        <input type="text" id="city2" placeholder="Type a second location.">
         <div>
             <div id="farCel">
+                <p>Measure:</p>
                 <label for="farenheit">Farenheit 
                     <input type="radio" id="farenheit" name="farCel" value="farenheit" checked=true>
                 </label>
@@ -42,15 +44,18 @@
                     <input type="radio" id="celcius" name="farCel" value="celcius">
                 </label>
             </div>
-            <label for="temp">Compare Temperature
-                <input type="checkbox" id="temp" checked=true>
-            </label>
-            <label for="humid">Compare Humidity
-                <input type="checkbox" id="humid" checked=true>
-            </label>
-            <label for="feelsLike">Compare "Real Feel"
-                <input type="checkbox" id="feelsLike" checked=true>
-            </label>
+            <div id="tempHumidFeels">
+                <p>Compare By:</p>
+                <label for="temp">Temperature
+                    <input type="radio" name="tempHumidFeels" id="temp" checked=true>
+                </label>
+                <label for="humid">Humidity
+                    <input type="radio" name="tempHumidFeels" id="humid">
+                </label>
+                <label for="feelsLike">"Real Feel"
+                    <input type="radio" name="tempHumidFeels" id="feelsLike">
+                </label>
+            </div>
         </div>
         <input type="submit" id="submit" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
     </form>
@@ -65,7 +70,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="x"></button>
             </div>
             <div class="modal-body">
-                <!-- <canvas id="canvas" width="400" height="400"></canvas> -->
+                <div id="chartDiv">
+                    <!-- Will add the canvas element in JavaScript -->
+                    <!-- <canvas id="chart"></canvas> -->
+                </div>
                 <table class="table">
                     <!-- Names of cities in table head to be populated by JS -->
                     <thead>
@@ -89,10 +97,10 @@
     <footer>
         &copy; Simcha Schaum
     </footer>
-
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js" integrity="sha512-VMsZqo0ar06BMtg0tPsdgRADvl0kDHpTbugCBBrL55KmucH6hP9zWdLIWY//OTfMnzz6xWQRxQqsUFefwHuHyg==" crossorigin="anonymous"></script> -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.0/dist/chart.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
     <script src="index.js"></script>
-
+    
 </body>
 </html>
