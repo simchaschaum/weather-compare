@@ -3,10 +3,10 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
-const city1 = document.getElementById("city1"); 
-const city2 = document.getElementById("city2"); 
-// const city1 = {value: "bet shemesh, il"};  // remove after development
-// const city2 = {value: "teaneck, nj"};  // remove after development
+// const city1 = document.getElementById("city1"); 
+// const city2 = document.getElementById("city2"); 
+const city1 = {value: "bet shemesh, il"};  // remove after development
+const city2 = {value: "teaneck, nj"};  // remove after development
 // Radio inputs for F/C:
 const farenheit = document.getElementById("farenheit");
 const celcius = document.getElementById("celcius");
@@ -20,6 +20,7 @@ const x = document.getElementById("x");
 const newComparison = document.getElementById("newComparison");
 // Display for answers: 
 const title = document.getElementById("displayTitle");
+const titleDiv = document.getElementById("titleDiv");
 const tableCitySpace = document.getElementById("tableCitySpace");
 const tableCity1 = document.getElementById("tableCity1");
 const tableCity2 = document.getElementById("tableCity2");
@@ -46,6 +47,7 @@ submit.addEventListener("click", (e)=>{
          title.textContent = "Whoops! Looks like you're missing some info."
      } else {
         histCounter = 0;  // this will count six total history API calls; only makes the chart after all 6.
+        
         getLatLong(1);
         getLatLong(2);
      }
@@ -101,8 +103,10 @@ let weather = {};
 
 function dataPrep(num,weatherObj){
     // Error Message:
-    if(weatherObj.cod==="404"){
+    if(weatherObj.cod===404){
         title.textContent = "Sorry! One or both of your cities can't be found."
+    }else if(weatherObj.cod !== 200){
+        errorMessage();
     } else {
         let name = weatherObj.name;
         // Getting temp:
@@ -267,11 +271,11 @@ function histWeatherCall(placeNum,dayNum,url){
                 getHighs(placeNum, day, historyObjPlace2[day].hourly);
             }
         })
-}
-
-// Error Message if something goes wrong.
-function errorMessage(){
-
+        .catch(error => {
+            if(histCounter===1){
+                errorMessage();
+            }
+        })
 }
 
 // Pulls apart and analyzes the historical data:
@@ -382,18 +386,31 @@ function makeChart(){
         }
     });
 }
-    
+
+// Error Message
+let stormIcon = "";
+function errorMessage(){
+    title.textContent = "Sorry! Something went wrong.";
+    stormIcon = document.createElement("img");
+    stormIcon.src = "http://openweathermap.org/img/wn/11d@2x.png";
+    stormIcon.classList.add("storm");
+    titleDiv.appendChild(stormIcon);
+}
 
 
-// // ********** Clean Up: **********
+//  ********** Clean Up: **********
 function resetChart(){
     while(tableBody.firstChild){
         tableBody.removeChild(tableBody.firstChild);
         tableCity1.textContent = "";
         tableCity2.textContent = "";
-        title.textContent = "";
     }
+    title.textContent = "";
+    if(!!stormIcon){
+        stormIcon.remove();
+    } 
 }
+
 function clearInputs(){
     city1.value = "";
     city2.value = "";
@@ -401,7 +418,9 @@ function clearInputs(){
 
 function destroyHistChart(){
     // Destroys chart if one exists.  Need to do this before chartjs can make another on the same canvas.
-    myChart.destroy();
+    if(!!myChart){
+        myChart.destroy();
+    }
 }
 
 

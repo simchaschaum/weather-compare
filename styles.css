@@ -114,6 +114,14 @@ td img{
 p{
     color: var(--clr-dark)
 }
+/* Helps the error message: */
+#titleDiv{
+    display: flex;
+    flex-direction: row;
+}
+.storm{
+    width: 60px
+}
 
 /* https://www.freecodecamp.org/news/how-to-keep-your-footer-where-it-belongs-59c6aa05c59c/ If I need it */
 footer{
