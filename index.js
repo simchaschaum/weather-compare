@@ -92,6 +92,7 @@ function getLatLong(num){
         })
         .catch(error => {
             console.log(error);
+            spinnerShowHide(false);
             errorMessage();
         })
 }
@@ -401,13 +402,16 @@ function makeChart(){
 }
 
 // Error Message
-let stormIcon = "";
+let stormIcon;
 function errorMessage(){
     title.textContent = "Sorry! Something went wrong.";
-    stormIcon = document.createElement("img");
-    stormIcon.src = "http://openweathermap.org/img/wn/11d@2x.png";
-    stormIcon.classList.add("storm");
-    titleDiv.appendChild(stormIcon);
+    if(!document.body.contains(stormIcon)){
+        console.log("yup");
+        stormIcon = document.createElement("img");
+        stormIcon.src = "http://openweathermap.org/img/wn/11d@2x.png";
+        stormIcon.classList.add("storm");
+        titleDiv.appendChild(stormIcon);
+    }
 }
 
 // Spinner show/ hide
