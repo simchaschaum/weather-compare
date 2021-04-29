@@ -108,10 +108,18 @@ input#submit:hover{
 
 /* The Results Display: */
 /* The spinner */
-.sr-loading{
-    color: green;
+#spinner-container{
+    display: flex;
+    justify-content: center;
 }
-
+/* Default for spinner */
+.spinner-border{
+    visibility: hidden
+}
+/* When showing the spinner */
+.show{
+    visibility: visible;
+}
 td img{
     width: 50px;
     height: auto;

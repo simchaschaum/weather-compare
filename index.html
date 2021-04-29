@@ -72,9 +72,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="x"></button>
             </div>
             <div class="modal-body">
-                <div id="chartDiv">
-                    <!-- Will add the canvas element in JavaScript -->
-                    <!-- <canvas id="chart"></canvas> -->
+                <div id="chartDiv"> 
+                    <!-- Will add the canvas element in JavaScript here.-->
+                    <!-- Spinner for promises: -->
+                    <div id="spinner-container">
+                        <div class="spinner-border text-dark" id="spinner" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
                 </div>
                 <table class="table">
                     <!-- Names of cities in table head to be populated by JS -->

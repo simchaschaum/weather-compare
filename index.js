@@ -27,6 +27,8 @@ const tableCity2 = document.getElementById("tableCity2");
 const tableBody = document.getElementById("tableBody");
 // Body for clicking off the modal
 const body = document.getElementById("body");
+// The spinner while waiting:
+const spinner = document.getElementById("spinner");
 
 // API urls - 
 // Openweathermap
@@ -75,6 +77,8 @@ let longitude;
 
 function getLatLong(num){
     let city = num === 1 ? city1.value : city2.value;
+    // first, turn on spinner's visibility:
+    spinnerShowHide(true);
     fetch(geocodeEndPoint1+geocodeToken2+geocodeEndPoint3+city+geocodeEndPoint5)
         .then(response => response.json())
         .then(data => {
@@ -85,6 +89,10 @@ function getLatLong(num){
             } else {
                 getHistWeather(num,latitude,longitude);
             }
+        })
+        .catch(error => {
+            console.log(error);
+            errorMessage();
         })
 }
 // The API call for current weather:
@@ -140,6 +148,8 @@ function dataPrep(num,weatherObj){
 }
 
 function display(weather){
+    // turn off spinner:
+    spinnerShowHide(false);
     // Setting the title:
     let measure = temp.checked ? "Temperature"
         : humid.checked ? "Humidity" : "'Real-Feel' Temperature";
@@ -270,10 +280,12 @@ function histWeatherCall(placeNum,dayNum,url){
                 historyObjPlace2[day] = data;
                 getHighs(placeNum, day, historyObjPlace2[day].hourly);
             }
+            spinnerShowHide(false);
         })
         .catch(error => {
             if(histCounter===1){
                 errorMessage();
+                spinnerShowHide(false);
             }
         })
 }
@@ -317,6 +329,7 @@ function getHighs(placeNum, day, arr){
     if(histCounter === 6){
         console.log(historyObjPlace1)
         console.log(historyObjPlace2)
+        // turn off spinner:
         makeChart();
     }
 
@@ -395,6 +408,15 @@ function errorMessage(){
     stormIcon.src = "http://openweathermap.org/img/wn/11d@2x.png";
     stormIcon.classList.add("storm");
     titleDiv.appendChild(stormIcon);
+}
+
+// Spinner show/ hide
+function spinnerShowHide(show){
+    if(show){
+        spinner.classList.add("show")
+    } else {
+        spinner.classList.remove("show")
+    }
 }
 
 
