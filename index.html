@@ -25,9 +25,9 @@
             <p>Compare:</p>
             <div id="compare">
                 <label for="current">Current Weather
-                    <input type="radio" name="lookUp" id="current" value="current"  checked=true>
+                    <input type="radio" name="lookUp" id="current" value="current" checked=true>
                 </label>
-                <label for="histWeather">Past 3 Days (almost ready)
+                <label for="histWeather">Past 3 Days
                     <input type="radio" name="lookUp" id="histWeather" value="histWeather">
                 </label>
             </div>
@@ -72,14 +72,20 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="x"></button>
             </div>
             <div class="modal-body">
-                <div id="chartDiv">
-                    <!-- Will add the canvas element in JavaScript -->
-                    <!-- <canvas id="chart"></canvas> -->
+                <!-- Chart for 3-day history -->
+                <div id="chartDiv"> 
+                    <!-- Will add the canvas element in JavaScript here.-->
+                    <!-- Spinner for promises: -->
+                    <div id="spinner-container">
+                        <div class="spinner-border text-dark" id="spinner" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
                 </div>
-                <table class="table">
+                <table id="table" class="table hide">
                     <!-- Names of cities in table head to be populated by JS -->
                     <thead>
-                        <th scope="col" id="tableCitySpace">City:</th>
+                        <th scope="col" id="tableCitySpace"></th>
                         <th scope="col" id="tableCity1"></th>
                         <th scope="col" id="tableCity2"></th>
                     </thead>

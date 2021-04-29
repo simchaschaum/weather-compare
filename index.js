@@ -21,12 +21,15 @@ const newComparison = document.getElementById("newComparison");
 // Display for answers: 
 const title = document.getElementById("displayTitle");
 const titleDiv = document.getElementById("titleDiv");
+const table = document.getElementById("table");
 const tableCitySpace = document.getElementById("tableCitySpace");
 const tableCity1 = document.getElementById("tableCity1");
 const tableCity2 = document.getElementById("tableCity2");
 const tableBody = document.getElementById("tableBody");
 // Body for clicking off the modal
 const body = document.getElementById("body");
+// The spinner while waiting:
+const spinner = document.getElementById("spinner");
 
 // API urls - 
 // Openweathermap
@@ -75,6 +78,8 @@ let longitude;
 
 function getLatLong(num){
     let city = num === 1 ? city1.value : city2.value;
+    // first, turn on spinner's visibility:
+    spinnerShowHide(true);
     fetch(geocodeEndPoint1+geocodeToken2+geocodeEndPoint3+city+geocodeEndPoint5)
         .then(response => response.json())
         .then(data => {
@@ -85,6 +90,11 @@ function getLatLong(num){
             } else {
                 getHistWeather(num,latitude,longitude);
             }
+        })
+        .catch(error => {
+            console.log(error);
+            spinnerShowHide(false);
+            errorMessage();
         })
 }
 // The API call for current weather:
@@ -140,11 +150,16 @@ function dataPrep(num,weatherObj){
 }
 
 function display(weather){
+    // turn off spinner:
+    spinnerShowHide(false);
+    // Making table visible:
+    table.classList.remove("hide");
     // Setting the title:
     let measure = temp.checked ? "Temperature"
         : humid.checked ? "Humidity" : "'Real-Feel' Temperature";
     title.textContent = `Comparing the Current Conditions and ${measure} of ${weather.city1.name} and ${weather.city2.name}`
     // Setting table headers:
+    tableCitySpace.textContent = "City"
     tableCity1.textContent = weather.city1.name;
     tableCity2.textContent = weather.city2.name;
     // Create row for conditions icon:
@@ -270,10 +285,12 @@ function histWeatherCall(placeNum,dayNum,url){
                 historyObjPlace2[day] = data;
                 getHighs(placeNum, day, historyObjPlace2[day].hourly);
             }
+            spinnerShowHide(false);
         })
         .catch(error => {
             if(histCounter===1){
                 errorMessage();
+                spinnerShowHide(false);
             }
         })
 }
@@ -317,6 +334,7 @@ function getHighs(placeNum, day, arr){
     if(histCounter === 6){
         console.log(historyObjPlace1)
         console.log(historyObjPlace2)
+        // turn off spinner:
         makeChart();
     }
 
@@ -388,13 +406,24 @@ function makeChart(){
 }
 
 // Error Message
-let stormIcon = "";
+let stormIcon;
 function errorMessage(){
     title.textContent = "Sorry! Something went wrong.";
-    stormIcon = document.createElement("img");
-    stormIcon.src = "http://openweathermap.org/img/wn/11d@2x.png";
-    stormIcon.classList.add("storm");
-    titleDiv.appendChild(stormIcon);
+    if(!document.body.contains(stormIcon)){
+        stormIcon = document.createElement("img");
+        stormIcon.src = "http://openweathermap.org/img/wn/11d@2x.png";
+        stormIcon.classList.add("storm");
+        titleDiv.appendChild(stormIcon);
+    }
+}
+
+// Spinner show/ hide
+function spinnerShowHide(show){
+    if(show){
+        spinner.classList.add("show")
+    } else {
+        spinner.classList.remove("show")
+    }
 }
 
 
@@ -405,6 +434,7 @@ function resetChart(){
         tableCity1.textContent = "";
         tableCity2.textContent = "";
     }
+    table.classList.add("hide");
     title.textContent = "";
     if(!!stormIcon){
         stormIcon.remove();
