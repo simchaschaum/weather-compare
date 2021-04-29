@@ -3,10 +3,10 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
-const city1 = document.getElementById("city1"); 
-const city2 = document.getElementById("city2"); 
-// const city1 = {value: "bet shemesh, il"};  // remove after development
-// const city2 = {value: "teaneck, nj"};  // remove after development
+// const city1 = document.getElementById("city1"); 
+// const city2 = document.getElementById("city2"); 
+const city1 = {value: "bet shemesh, il"};  // remove after development
+const city2 = {value: "teaneck, nj"};  // remove after development
 // Radio inputs for F/C:
 const farenheit = document.getElementById("farenheit");
 const celcius = document.getElementById("celcius");

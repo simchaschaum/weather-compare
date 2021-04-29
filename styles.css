@@ -107,6 +107,11 @@ input#submit:hover{
 }
 
 /* The Results Display: */
+/* The spinner */
+.sr-loading{
+    color: green;
+}
+
 td img{
     width: 50px;
     height: auto;
