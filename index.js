@@ -3,10 +3,10 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
-// const city1 = document.getElementById("city1"); 
-// const city2 = document.getElementById("city2"); 
-const city1 = {value: "bet shemesh, il"};  // remove after development
-const city2 = {value: "teaneck, nj"};  // remove after development
+const city1 = document.getElementById("city1"); 
+const city2 = document.getElementById("city2"); 
+// const city1 = {value: "bet shemesh, il"};  // remove after development
+// const city2 = {value: "teaneck, nj"};  // remove after development
 // Radio inputs for F/C:
 const farenheit = document.getElementById("farenheit");
 const celcius = document.getElementById("celcius");
@@ -298,8 +298,6 @@ function histWeatherCall(placeNum,dayNum,url,placeName,unixDate){
     let month = dateObj.toLocaleString("en-US",{month:"short"});
     let dayOfMonth =  dateObj.toLocaleString("en-US",{day:"numeric"});
     let date = `${month} ${dayOfMonth}`;
-    console.log(milliseconds);
-    console.log(date);
     fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -363,9 +361,6 @@ function getHighs(placeNum, day, arr){
     
     // Only create the chart when we've done all 6 API history calls.
     if(histCounter === 6){
-        console.log(historyObjPlace1)
-        console.log(historyObjPlace2)
-        // turn off spinner:
         makeChart();
     }
 
