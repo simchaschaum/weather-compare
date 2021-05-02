@@ -265,24 +265,34 @@ function getHistWeather(placeNum,latitude,longitude, place){
         let days = 86400 * i;  // seconds per day, times number of days back (i)
         let date = (Math.round(Date.now()/1000))-days;
         // Creates the URL and sends to the function that makes the API call and constructs the object:
-        histWeatherCall(placeNum,i,url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey,place);
+        histWeatherCall(placeNum,i,url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey,place,date);
     }
 }
 
 // The actual API call.  
-function histWeatherCall(placeNum,dayNum,url,placeName){
+function histWeatherCall(placeNum,dayNum,url,placeName,unixDate){
     let day = dayNum.toString();
     let place = placeNum.toString();
+    // Getting the date from the Unix timestamp:
+    let milliseconds = unixDate*1000;
+    let dateObj = new Date(milliseconds);
+    let month = dateObj.toLocaleString("en-US",{month:"short"});
+    let dayOfMonth =  dateObj.toLocaleString("en-US",{day:"numeric"});
+    let date = `${month} ${dayOfMonth}`;
+    console.log(milliseconds);
+    console.log(date);
     fetch(url)
         .then(response => response.json())
         .then(data => {
             if(placeNum === 1){
                 historyObjPlace1["name"] = placeName;
                 historyObjPlace1[day] = data;
+                historyObjPlace1[day]["date"] = date;
                 getHighs(placeNum, day, historyObjPlace1[day].hourly, placeName);
             } else {
                 historyObjPlace2["name"] = placeName;
                 historyObjPlace2[day] = data;
+                historyObjPlace2[day]["date"] = date;
                 getHighs(placeNum, day, historyObjPlace2[day].hourly);
             }
             spinnerShowHide(false);
@@ -378,15 +388,15 @@ function makeChart(){
     myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Day 1', 'Day 2', 'Day 3'],
+            labels: [historyObjPlace1[1]["date"], historyObjPlace1[2]["date"], historyObjPlace1[3]["date"]],
             datasets: [{
                 label: historyObjPlace1["name"],
                 data: data1,
                 backgroundColor: [
-                    'blue'
+                    '#B75300'
                 ],
                 borderColor: [
-                    'blue'
+                    '#B75300'
                 ],
                 borderWidth: 1
             },
@@ -394,10 +404,10 @@ function makeChart(){
                 label: historyObjPlace2["name"],
                 data: data2,
                 backgroundColor: [
-                    'red'
+                    '#FF963F'
                 ],
                 borderColor: [
-                    'red'
+                    '#FF963F'
                 ],
                 borderWidth: 1
             }]
