@@ -265,7 +265,6 @@ function getHistWeather(placeNum,latitude,longitude){
         console.log(`month = ${month}, day = ${day} - for counter ${i}`)//***
         let date = Date.UTC(year,month,day)/1000;
         // Creates the URL and sends to the function that makes the API call and constructs the object:
-        console.log(placeNum,i,url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey);
         histWeatherCall(placeNum,i,url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey);
     }
 }
