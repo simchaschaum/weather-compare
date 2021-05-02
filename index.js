@@ -108,7 +108,6 @@ function getLatLong(num){
             if(lastPlace === " USA"){
                 lastPlace = data[0].display_name.match(/[A-Za-z\s]{1,}(?=,)(?!.*[A-Z][a-z]{1,})/)[0];  //positive lookahead to find the final instance of a state name (i.e. something not in all caps)"
             } 
-            console.log(lastPlace)
             if(lastPlace === "Palestinian Territory"){
                 lastPlace = "Israel"  // a little bit of right-wing Zionism :) 
             }
