@@ -3,10 +3,10 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
-const city1 = document.getElementById("city1"); 
-const city2 = document.getElementById("city2"); 
-// const city1 = {value: "bet shemesh, il"};  // remove after development
-// const city2 = {value: "teaneck, nj"};  // remove after development
+// const city1 = document.getElementById("city1"); 
+// const city2 = document.getElementById("city2"); 
+const city1 = {value: "bet shemesh, il"};  // remove after development
+const city2 = {value: "teaneck, nj"};  // remove after development
 // Radio inputs for F/C:
 const farenheit = document.getElementById("farenheit");
 const celcius = document.getElementById("celcius");
@@ -14,6 +14,7 @@ const celcius = document.getElementById("celcius");
 const temp = document.getElementById("temp");
 const humid = document.getElementById("humid");
 const feelsLike = document.getElementById("feelsLike");
+const all3 = document.getElementById("all3");
 //Buttons:
 const submit = document.getElementById("submit");
 const x = document.getElementById("x");  
@@ -63,13 +64,29 @@ x.addEventListener("click",(e)=>{
     }
 })
 newComparison.addEventListener("click",(e)=>{
-    e.preventDefault(e);
+    e.preventDefault();
     resetChart();
     clearInputs();
     if(histWeather.checked){
         destroyHistChart()
     }
 })
+histWeather.addEventListener("change",(e)=>{
+    e.preventDefault();
+    if(histWeather.checked){
+        all3.disabled = true;
+        if(all3.checked){
+            temp.checked = true;
+        }
+    }
+});
+current.addEventListener("change",(e)=>{
+    e.preventDefault();
+    if(current.checked){
+        all3.disabled = false;
+    }
+})
+
 
 // ***Functions:***
 // API call for latitude and longitude (for either info:)
@@ -158,7 +175,9 @@ function display(weather){
     table.classList.remove("hide");
     // Setting the title:
     let measure = temp.checked ? "Temperature"
-        : humid.checked ? "Humidity" : "'Real-Feel' Temperature";
+        : humid.checked ? "Humidity" 
+        : feelsLike.checked ? "'Real-Feel' Temperature"
+        : "Temperature, Humidity, and 'Real-Feel' Temp";
     title.textContent = `Comparing the Current Conditions and ${measure} of ${weather.city1.name} and ${weather.city2.name}`
     // Setting table headers:
     tableCitySpace.textContent = "City"
@@ -182,7 +201,7 @@ function display(weather){
     tr.appendChild(td2);
     tableBody.appendChild(tr);
     // Create row for temperature (if selectged):
-        if(temp.checked){
+        if(temp.checked || all3.checked){
             // row title:
             let th = document.createElement("th");
             let textNode = document.createTextNode("Temperature");
@@ -201,7 +220,7 @@ function display(weather){
             tableBody.appendChild(tr);
         }
     // Create row for humidity (if selected):
-    if(humid.checked){
+    if(humid.checked || all3.checked){
         // row title:
         let th = document.createElement("th");
         let textNode = document.createTextNode("Humidity");
@@ -220,7 +239,7 @@ function display(weather){
         tableBody.appendChild(tr);
     }
     // Create row for real-feel (if selected):
-    if(feelsLike.checked){
+    if(feelsLike.checked || all3.checked){
         // row title:
         let th = document.createElement("th");
         let textNode = document.createTextNode("Feels Like");
