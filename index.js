@@ -87,7 +87,6 @@ current.addEventListener("change",(e)=>{
     }
 })
 
-
 // ***Functions:***
 // API call for latitude and longitude (for either info:)
 let latitude;
