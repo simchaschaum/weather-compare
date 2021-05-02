@@ -108,6 +108,9 @@ function getLatLong(num){
             if(lastPlace === " USA"){
                 lastPlace = data[0].display_name.match(/[A-Za-z\s]{1,}(?=,)(?!.*[A-Z][a-z]{1,})/)[0];  //positive lookahead to find the final instance of a state name (i.e. something not in all caps)"
             } 
+            if(lastPlace = "Palestinian Territory"){
+                lastPlace = "Israel"
+            }
             let place =  `${firstPlace}, ${lastPlace}`
             if(current.checked){
                 getCurrentWeather(num,latitude,longitude,place);
