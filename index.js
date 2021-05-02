@@ -3,10 +3,10 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
-const city1 = document.getElementById("city1"); 
-const city2 = document.getElementById("city2"); 
-// const city1 = {value: "bet shemesh, il"};  // remove after development
-// const city2 = {value: "teaneck, nj"};  // remove after development
+// const city1 = document.getElementById("city1"); 
+// const city2 = document.getElementById("city2"); 
+const city1 = {value: "bet shemesh, il"};  // remove after development
+const city2 = {value: "teaneck, nj"};  // remove after development
 // Radio inputs for F/C:
 const farenheit = document.getElementById("farenheit");
 const celcius = document.getElementById("celcius");
@@ -108,8 +108,9 @@ function getLatLong(num){
             if(lastPlace === " USA"){
                 lastPlace = data[0].display_name.match(/[A-Za-z\s]{1,}(?=,)(?!.*[A-Z][a-z]{1,})/)[0];  //positive lookahead to find the final instance of a state name (i.e. something not in all caps)"
             } 
-            if(lastPlace = "Palestinian Territory"){
-                lastPlace = "Israel"
+            console.log(lastPlace)
+            if(lastPlace === "Palestinian Territory"){
+                lastPlace = "Israel"  // a little bit of right-wing Zionism :) 
             }
             let place =  `${firstPlace}, ${lastPlace}`
             if(current.checked){
