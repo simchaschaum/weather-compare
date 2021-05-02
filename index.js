@@ -102,12 +102,13 @@ function getLatLong(num){
             let latitude = data[0].lat;
             let longitude = data[0].lon;
             // Get name of place here, pass it to both functions!!*** 
-            console.log(data[0].display_name)
             let firstPlace = data[0].display_name.match(/^[A-z ]{1,}/)[0];
             let lastPlace = data[0].display_name.match(/[A-z ]{1,}$/)[0];
-            let state = data[0].display_name.match(/[A-Z][a-z]{1,}(?!.*[A-Z][a-z]{1,})/)[0];  // "negative lookahead to find the final instance of a city name (i.e. something not in all caps)"
-            let place = lastPlace === " USA" ? `${firstPlace}, ${state}` : `${firstPlace}, ${lastPlace}`;  // if it's in the US, give it a state, not country
-            console.log(place)
+            // if it's in the US, give it a state, not country
+            if(lastPlace === " USA"){
+                lastPlace = data[0].display_name.match(/[A-Za-z\s]{1,}(?=,)(?!.*[A-Z][a-z]{1,})/)[0];  //positive lookahead to find the final instance of a state name (i.e. something not in all caps)"
+            } 
+            let place =  `${firstPlace}, ${lastPlace}`
             if(current.checked){
                 getCurrentWeather(num,latitude,longitude,place);
             } else {
