@@ -14,6 +14,7 @@ const celcius = document.getElementById("celcius");
 const temp = document.getElementById("temp");
 const humid = document.getElementById("humid");
 const feelsLike = document.getElementById("feelsLike");
+const all3 = document.getElementById("all3");
 //Buttons:
 const submit = document.getElementById("submit");
 const x = document.getElementById("x");  
@@ -63,11 +64,26 @@ x.addEventListener("click",(e)=>{
     }
 })
 newComparison.addEventListener("click",(e)=>{
-    e.preventDefault(e);
+    e.preventDefault();
     resetChart();
     clearInputs();
     if(histWeather.checked){
         destroyHistChart()
+    }
+})
+histWeather.addEventListener("change",(e)=>{
+    e.preventDefault();
+    if(histWeather.checked){
+        all3.disabled = true;
+        if(all3.checked){
+            temp.checked = true;
+        }
+    }
+});
+current.addEventListener("change",(e)=>{
+    e.preventDefault();
+    if(current.checked){
+        all3.disabled = false;
     }
 })
 
@@ -85,10 +101,12 @@ function getLatLong(num){
         .then(data => {
             let latitude = data[0].lat;
             let longitude = data[0].lon;
+            // Get name of place here, pass it to both functions!!*** 
+            let place = data[0].display_name.match(/^[A-z ]{1,}/)[0];
             if(current.checked){
-                getCurrentWeather(num,latitude,longitude);
+                getCurrentWeather(num,latitude,longitude,place);
             } else {
-                getHistWeather(num,latitude,longitude);
+                getHistWeather(num,latitude,longitude,place);
             }
         })
         .catch(error => {
@@ -98,27 +116,27 @@ function getLatLong(num){
         })
 }
 // The API call for current weather:
-function getCurrentWeather(num, latitude,longitude){
+function getCurrentWeather(num, latitude,longitude,place){
     let url = "https://api.openweathermap.org/data/2.5/weather?lat=";
     let lon = "&lon=";
     fetch(url+latitude+lon+longitude+apiPrefix+apiKey) 
     .then(response => response.json()) 
     .then(data => {  
         weatherObj = data;
-        dataPrep(num, weatherObj);
+        dataPrep(num, weatherObj,place);
     })
 }
 // Initializing weather object for dataPrep function:
 let weather = {};
 
-function dataPrep(num,weatherObj){
+function dataPrep(num,weatherObj,place){
     // Error Message:
     if(weatherObj.cod===404){
         title.textContent = "Sorry! One or both of your cities can't be found."
     }else if(weatherObj.cod !== 200){
         errorMessage();
     } else {
-        let name = weatherObj.name;
+        let name = place;
         // Getting temp:
         let tempKelvin = weatherObj.main.temp;
         let tempFar = (tempKelvin - 273) * 1.8 + 32;
@@ -156,7 +174,9 @@ function display(weather){
     table.classList.remove("hide");
     // Setting the title:
     let measure = temp.checked ? "Temperature"
-        : humid.checked ? "Humidity" : "'Real-Feel' Temperature";
+        : humid.checked ? "Humidity" 
+        : feelsLike.checked ? "'Real-Feel' Temperature"
+        : "Temperature, Humidity, and 'Real-Feel' Temp";
     title.textContent = `Comparing the Current Conditions and ${measure} of ${weather.city1.name} and ${weather.city2.name}`
     // Setting table headers:
     tableCitySpace.textContent = "City"
@@ -180,7 +200,7 @@ function display(weather){
     tr.appendChild(td2);
     tableBody.appendChild(tr);
     // Create row for temperature (if selectged):
-        if(temp.checked){
+        if(temp.checked || all3.checked){
             // row title:
             let th = document.createElement("th");
             let textNode = document.createTextNode("Temperature");
@@ -199,7 +219,7 @@ function display(weather){
             tableBody.appendChild(tr);
         }
     // Create row for humidity (if selected):
-    if(humid.checked){
+    if(humid.checked || all3.checked){
         // row title:
         let th = document.createElement("th");
         let textNode = document.createTextNode("Humidity");
@@ -218,7 +238,7 @@ function display(weather){
         tableBody.appendChild(tr);
     }
     // Create row for real-feel (if selected):
-    if(feelsLike.checked){
+    if(feelsLike.checked || all3.checked){
         // row title:
         let th = document.createElement("th");
         let textNode = document.createTextNode("Feels Like");
@@ -248,7 +268,7 @@ function display(weather){
 let historyObjPlace1 = {};
 let historyObjPlace2 = {};
 
-function getHistWeather(placeNum,latitude,longitude){  
+function getHistWeather(placeNum,latitude,longitude, place){  
     // First, clear both history objects:
     for(item in historyObjPlace1){
         delete historyObjPlace1[item]
@@ -259,30 +279,36 @@ function getHistWeather(placeNum,latitude,longitude){
     // Call the weather history:    
     let url = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=";
     for(var i = 3; i >0; i--){  
-        let year = new Date().getFullYear();
-        let month = new Date().getMonth()+1;
-        let day = new Date().getDate()-i;
-        console.log(`month = ${month}, day = ${day} - for counter ${i}`)//***
-        let date = Date.UTC(year,month,day)/1000;
+        // For some reason, the API accepts the UNIX date in seconds, not milliseconds.  
+        let days = 86400 * i;  // seconds per day, times number of days back (i)
+        let date = (Math.round(Date.now()/1000))-days;
         // Creates the URL and sends to the function that makes the API call and constructs the object:
-        histWeatherCall(placeNum,i,url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey);
+        histWeatherCall(placeNum,i,url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey,place,date);
     }
 }
 
 // The actual API call.  
-function histWeatherCall(placeNum,dayNum,url){
+function histWeatherCall(placeNum,dayNum,url,placeName,unixDate){
     let day = dayNum.toString();
     let place = placeNum.toString();
+    // Getting the date from the Unix timestamp:
+    let milliseconds = unixDate*1000;
+    let dateObj = new Date(milliseconds);
+    let month = dateObj.toLocaleString("en-US",{month:"short"});
+    let dayOfMonth =  dateObj.toLocaleString("en-US",{day:"numeric"});
+    let date = `${month} ${dayOfMonth}`;
     fetch(url)
         .then(response => response.json())
         .then(data => {
             if(placeNum === 1){
-                historyObjPlace1["name"] = city1.value;
+                historyObjPlace1["name"] = placeName;
                 historyObjPlace1[day] = data;
-                getHighs(placeNum, day, historyObjPlace1[day].hourly);
+                historyObjPlace1[day]["date"] = date;
+                getHighs(placeNum, day, historyObjPlace1[day].hourly, placeName);
             } else {
-                historyObjPlace2["name"] = city2.value;
+                historyObjPlace2["name"] = placeName;
                 historyObjPlace2[day] = data;
+                historyObjPlace2[day]["date"] = date;
                 getHighs(placeNum, day, historyObjPlace2[day].hourly);
             }
             spinnerShowHide(false);
@@ -296,18 +322,20 @@ function histWeatherCall(placeNum,dayNum,url){
 }
 
 // Pulls apart and analyzes the historical data:
+// For temp and real-feel, we get the highest; for humidity, we get the measurement at noon.
 function getHighs(placeNum, day, arr){
     //count off how many history calls - from 1 to 6
     histCounter++;  
     // each arr is a different day and place.  It has an object with temp, feels_like, and humidity. 
     let highTemp = 0;
-    let highHumidity = 0;
+    // let highHumidity = 0;
     let highFeelsLike = 0;
     arr.forEach(hour => {
         highTemp = hour.temp > highTemp ? hour.temp : highTemp;
-        highHumidity = hour.humidity > highHumidity ? hour.humidity : highHumidity;
+        // highHumidity = hour.humidity > highHumidity ? hour.humidity : highHumidity;
         highFeelsLike = hour.feels_like > highFeelsLike ? hour.feels_like : highFeelsLike;
     })
+    let noonHumidity = arr[12].humidity;
     // Convert from Kelvin to either Farenheit or Celcius:
     let highTempFar = (highTemp - 273) * 1.8 + 32;
     let highTempCel = highTemp - 273.15;
@@ -319,22 +347,19 @@ function getHighs(placeNum, day, arr){
     if(placeNum === 1){
         historyObjPlace1[day]["highs"] = {
             temp: highTemp,
-            humidity: highHumidity,
+            humidity: noonHumidity,
             feelsLike: highFeelsLike
         }
     } else {
         historyObjPlace2[day]["highs"] = {
             temp: highTemp,
-            humidity: highHumidity,
+            humidity: noonHumidity,
             feelsLike: highFeelsLike
         }
     }
     
     // Only create the chart when we've done all 6 API history calls.
     if(histCounter === 6){
-        console.log(historyObjPlace1)
-        console.log(historyObjPlace2)
-        // turn off spinner:
         makeChart();
     }
 
@@ -347,6 +372,11 @@ let data1 = [];
 let data2 = [];
 
 function makeChart(){
+    // Making the title:
+    let measure = temp.checked ? "Temperature"
+        : humid.checked ? "Humidity at Noon" : "'Real-Feel' Temperature";
+    title.textContent = `Comparing the ${measure} of ${historyObjPlace1.name} and ${historyObjPlace2.name} Over the Past 3 Days`
+    
     // Create the canvas element for the chart and set its id:
     let chart = document.createElement("canvas");
     chart.setAttribute("id","chart");
@@ -371,15 +401,15 @@ function makeChart(){
     myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Day 1', 'Day 2', 'Day 3'],
+            labels: [historyObjPlace1[1]["date"], historyObjPlace1[2]["date"], historyObjPlace1[3]["date"]],
             datasets: [{
                 label: historyObjPlace1["name"],
                 data: data1,
                 backgroundColor: [
-                    'blue'
+                    '#B75300'
                 ],
                 borderColor: [
-                    'blue'
+                    '#B75300'
                 ],
                 borderWidth: 1
             },
@@ -387,10 +417,10 @@ function makeChart(){
                 label: historyObjPlace2["name"],
                 data: data2,
                 backgroundColor: [
-                    'red'
+                    '#FF963F'
                 ],
                 borderColor: [
-                    'red'
+                    '#FF963F'
                 ],
                 borderWidth: 1
             }]
@@ -452,7 +482,3 @@ function destroyHistChart(){
         myChart.destroy();
     }
 }
-
-
-
-
