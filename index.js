@@ -482,7 +482,3 @@ function destroyHistChart(){
         myChart.destroy();
     }
 }
-
-
-
-
