@@ -105,6 +105,8 @@ input#submit{
 input#submit:hover{
     background-color: var(--clr-dark);
     color: var(--clr-white);
+    /* For iOs devices */
+    -webkit-appearance: none;
 }
 
 /* The Results Display: */
