@@ -85,10 +85,12 @@ function getLatLong(num){
         .then(data => {
             let latitude = data[0].lat;
             let longitude = data[0].lon;
+            // Get name of place here, pass it to both functions!!*** 
+            let place = data[0].display_name.match(/^[A-z ]{1,}/)[0];
             if(current.checked){
-                getCurrentWeather(num,latitude,longitude);
+                getCurrentWeather(num,latitude,longitude,place);
             } else {
-                getHistWeather(num,latitude,longitude);
+                getHistWeather(num,latitude,longitude,place);
             }
         })
         .catch(error => {
@@ -98,27 +100,27 @@ function getLatLong(num){
         })
 }
 // The API call for current weather:
-function getCurrentWeather(num, latitude,longitude){
+function getCurrentWeather(num, latitude,longitude,place){
     let url = "https://api.openweathermap.org/data/2.5/weather?lat=";
     let lon = "&lon=";
     fetch(url+latitude+lon+longitude+apiPrefix+apiKey) 
     .then(response => response.json()) 
     .then(data => {  
         weatherObj = data;
-        dataPrep(num, weatherObj);
+        dataPrep(num, weatherObj,place);
     })
 }
 // Initializing weather object for dataPrep function:
 let weather = {};
 
-function dataPrep(num,weatherObj){
+function dataPrep(num,weatherObj,place){
     // Error Message:
     if(weatherObj.cod===404){
         title.textContent = "Sorry! One or both of your cities can't be found."
     }else if(weatherObj.cod !== 200){
         errorMessage();
     } else {
-        let name = weatherObj.name;
+        let name = place;
         // Getting temp:
         let tempKelvin = weatherObj.main.temp;
         let tempFar = (tempKelvin - 273) * 1.8 + 32;
@@ -248,7 +250,7 @@ function display(weather){
 let historyObjPlace1 = {};
 let historyObjPlace2 = {};
 
-function getHistWeather(placeNum,latitude,longitude){  
+function getHistWeather(placeNum,latitude,longitude, place){  
     // First, clear both history objects:
     for(item in historyObjPlace1){
         delete historyObjPlace1[item]
@@ -259,29 +261,27 @@ function getHistWeather(placeNum,latitude,longitude){
     // Call the weather history:    
     let url = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=";
     for(var i = 3; i >0; i--){  
-        let year = new Date().getFullYear();
-        let month = new Date().getMonth()+1;
-        let day = new Date().getDate()-i;
-        console.log(`month = ${month}, day = ${day} - for counter ${i}`)//***
-        let date = Date.UTC(year,month,day)/1000;
+        // For some reason, the API accepts the UNIX date in seconds, not milliseconds.  
+        let days = 86400 * i;  // seconds per day, times number of days back (i)
+        let date = (Math.round(Date.now()/1000))-days;
         // Creates the URL and sends to the function that makes the API call and constructs the object:
-        histWeatherCall(placeNum,i,url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey);
+        histWeatherCall(placeNum,i,url+latitude+"&lon="+longitude+"&dt="+date+apiPrefix+apiKey,place);
     }
 }
 
 // The actual API call.  
-function histWeatherCall(placeNum,dayNum,url){
+function histWeatherCall(placeNum,dayNum,url,placeName){
     let day = dayNum.toString();
     let place = placeNum.toString();
     fetch(url)
         .then(response => response.json())
         .then(data => {
             if(placeNum === 1){
-                historyObjPlace1["name"] = city1.value;
+                historyObjPlace1["name"] = placeName;
                 historyObjPlace1[day] = data;
-                getHighs(placeNum, day, historyObjPlace1[day].hourly);
+                getHighs(placeNum, day, historyObjPlace1[day].hourly, placeName);
             } else {
-                historyObjPlace2["name"] = city2.value;
+                historyObjPlace2["name"] = placeName;
                 historyObjPlace2[day] = data;
                 getHighs(placeNum, day, historyObjPlace2[day].hourly);
             }
@@ -296,18 +296,20 @@ function histWeatherCall(placeNum,dayNum,url){
 }
 
 // Pulls apart and analyzes the historical data:
+// For temp and real-feel, we get the highest; for humidity, we get the measurement at noon.
 function getHighs(placeNum, day, arr){
     //count off how many history calls - from 1 to 6
     histCounter++;  
     // each arr is a different day and place.  It has an object with temp, feels_like, and humidity. 
     let highTemp = 0;
-    let highHumidity = 0;
+    // let highHumidity = 0;
     let highFeelsLike = 0;
     arr.forEach(hour => {
         highTemp = hour.temp > highTemp ? hour.temp : highTemp;
-        highHumidity = hour.humidity > highHumidity ? hour.humidity : highHumidity;
+        // highHumidity = hour.humidity > highHumidity ? hour.humidity : highHumidity;
         highFeelsLike = hour.feels_like > highFeelsLike ? hour.feels_like : highFeelsLike;
     })
+    let noonHumidity = arr[12].humidity;
     // Convert from Kelvin to either Farenheit or Celcius:
     let highTempFar = (highTemp - 273) * 1.8 + 32;
     let highTempCel = highTemp - 273.15;
@@ -319,13 +321,13 @@ function getHighs(placeNum, day, arr){
     if(placeNum === 1){
         historyObjPlace1[day]["highs"] = {
             temp: highTemp,
-            humidity: highHumidity,
+            humidity: noonHumidity,
             feelsLike: highFeelsLike
         }
     } else {
         historyObjPlace2[day]["highs"] = {
             temp: highTemp,
-            humidity: highHumidity,
+            humidity: noonHumidity,
             feelsLike: highFeelsLike
         }
     }
@@ -347,6 +349,11 @@ let data1 = [];
 let data2 = [];
 
 function makeChart(){
+    // Making the title:
+    let measure = temp.checked ? "Temperature"
+        : humid.checked ? "Humidity at Noon" : "'Real-Feel' Temperature";
+    title.textContent = `Comparing the ${measure} of ${historyObjPlace1.name} and ${historyObjPlace2.name} Over the Past 3 Days`
+    
     // Create the canvas element for the chart and set its id:
     let chart = document.createElement("canvas");
     chart.setAttribute("id","chart");
