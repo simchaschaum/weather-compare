@@ -407,7 +407,7 @@ function makeChart(){
     myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: [historyObjPlace1[1]["date"], historyObjPlace1[2]["date"], historyObjPlace1[3]["date"]],
+            labels: [historyObjPlace1[3]["date"], historyObjPlace1[2]["date"], historyObjPlace1[1]["date"]],
             datasets: [{
                 label: historyObjPlace1["name"],
                 data: data1,
