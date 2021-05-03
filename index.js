@@ -108,7 +108,7 @@ function getLatLong(num){
             if(lastPlace === " USA"){
                 lastPlace = data[0].display_name.match(/[A-Za-z\s]{1,}(?=,)(?!.*[A-Z][a-z]{1,})/)[0];  //positive lookahead to find the final instance of a state name (i.e. something not in all caps)"
             } 
-            if(lastPlace === " Palestinian Territory"){
+            if(lastPlace === " Palestinian Territory" || lastPlace === " Palestine"){
                 lastPlace = "Israel"  // a little bit of right-wing Zionism :) 
             }
             let place =  `${firstPlace}, ${lastPlace}`
@@ -492,8 +492,3 @@ function destroyHistChart(){
         chartDiv.removeChild(chart);
     }
 }
-
-
-/*
-Chart div disappears - need to keep it, but lose the height. 
-*/
