@@ -489,6 +489,11 @@ function destroyHistChart(){
     // Destroys chart if one exists.  Need to do this before chartjs can make another on the same canvas.
     if(!!myChart){
         myChart.destroy();
-        chartDiv.remove();
+        chartDiv.removeChild(chart);
     }
 }
+
+
+/*
+Chart div disappears - need to keep it, but lose the height. 
+*/
