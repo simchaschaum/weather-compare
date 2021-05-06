@@ -108,6 +108,9 @@ input#submit:hover{
     /* For iOs devices */
     -webkit-appearance: none;
 }
+.all3Hidden{
+    visibility: hidden;
+}
 
 /* The Results Display: */
 /* The spinner */

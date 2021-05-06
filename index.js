@@ -15,6 +15,7 @@ const temp = document.getElementById("temp");
 const humid = document.getElementById("humid");
 const feelsLike = document.getElementById("feelsLike");
 const all3 = document.getElementById("all3");
+const all3Label = document.getElementById("all3Label");
 //Buttons:
 const submit = document.getElementById("submit");
 const x = document.getElementById("x");  
@@ -74,7 +75,7 @@ newComparison.addEventListener("click",(e)=>{
 histWeather.addEventListener("change",(e)=>{
     e.preventDefault();
     if(histWeather.checked){
-        all3.disabled = true;
+        all3Label.classList.add("all3Hidden")
         if(all3.checked){
             temp.checked = true;
         }
@@ -83,7 +84,7 @@ histWeather.addEventListener("change",(e)=>{
 current.addEventListener("change",(e)=>{
     e.preventDefault();
     if(current.checked){
-        all3.disabled = false;
+        all3Label.classList.remove("all3Hidden")
     }
 })
 
