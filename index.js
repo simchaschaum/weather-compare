@@ -116,7 +116,7 @@ function findYourLocation(){
         yourLocation.classList.remove("btnBold");
         city1.disabled = false;
     }
-}
+} 
 
 function getLatLong(num){
     let city = num === 1 ? city1.value : city2.value;
