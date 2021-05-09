@@ -92,6 +92,31 @@ input[type=text]{
     border-radius: 3px;
     padding: 10px;
 }
+span#location1Div{
+    display: flex;
+    justify-content: space-between;
+}
+input[type=text]:first-of-type{
+    width: 60%
+}
+button#yourLocation{
+    width: 39%;
+    border: none;
+    height: 40px;
+    border-radius: 3px;
+    padding: 10px;
+    background-color: var(--clr-white);
+    color: var(--clr-dark);
+}
+button#yourLocation:hover{
+    background-color: var(--clr-dark);
+    color: var(--clr-white);
+}
+button#yourLocation.btnBold{
+    border: 5px solid var(--clr-dark);
+    background-color: var(--clr-light);
+    padding-top: 5px
+}
 
 input#submit{
     width: 100px;

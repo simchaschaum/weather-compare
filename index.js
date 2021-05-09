@@ -3,6 +3,7 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
+const yourLocation = document.getElementById("yourLocation");
 const city1 = document.getElementById("city1"); 
 const city2 = document.getElementById("city2"); 
 // const city1 = {value: "bet shemesh, il"};  // remove after development
@@ -32,7 +33,6 @@ const tableBody = document.getElementById("tableBody");
 const body = document.getElementById("body");
 // The spinner while waiting:
 const spinner = document.getElementById("spinner");
-
 // API urls - 
 // Openweathermap
 const apiPrefix = "&APPID="
@@ -42,7 +42,9 @@ const geocodeToken2 = "pk.7c752c8d33acc057c62397f44df6a292";
 const geocodeEndPoint1 = "https://us1.locationiq.com/v1/search.php?key=";
 const geocodeEndPoint3 = "&q="; // search string comes next
 const geocodeEndPoint5 = "&format=json"
-
+// api for reverse lookup for current location
+const revGeocodeEndPointBegin = "https://us1.locationiq.com/v1/reverse.php?key=";
+const revGeocodeEndPointEnd = "&format=json";
 
 let histCounter = 0;
 // *** Event Listeners: ***
@@ -87,24 +89,49 @@ current.addEventListener("change",(e)=>{
         all3Label.classList.remove("all3Hidden")
     }
 })
+yourLocation.addEventListener("click",(e)=>{
+    e.preventDefault();
+    findYourLocation();
+})
 
 // ***Functions:***
 // API call for latitude and longitude (for either info:)
-let latitude;
-let longitude;
+// let latitude;
+// let longitude;
+let revLat, revLon;
+let revData;
+let firstPlace, lastPlace;
+let yourLocationOn = false;
+
+// To get your own location:
+function findYourLocation(){
+    if(!yourLocationOn){
+        yourLocationOn = true;
+        city1.value = `My Location`;
+        yourLocation.classList.add("btnBold");
+        city1.disabled = true;
+    } else{
+        yourLocationOn = false;
+        city1.value = "";
+        yourLocation.classList.remove("btnBold");
+        city1.disabled = false;
+    }
+}
 
 function getLatLong(num){
     let city = num === 1 ? city1.value : city2.value;
     // first, turn on spinner's visibility:
     spinnerShowHide(true);
-    fetch(geocodeEndPoint1+geocodeToken2+geocodeEndPoint3+city+geocodeEndPoint5)
+    // fetch the longitiude and latitude only if you didn't choose your location;
+    if((num===1 && city1.value !== "My Location")||num===2){
+        fetch(geocodeEndPoint1+geocodeToken2+geocodeEndPoint3+city+geocodeEndPoint5)
         .then(response => response.json())
         .then(data => {
             let latitude = data[0].lat;
             let longitude = data[0].lon;
             // Get name of place here, pass it to both functions!!*** 
-            let firstPlace = data[0].display_name.match(/^[A-z ]{1,}/)[0];
-            let lastPlace = data[0].display_name.match(/[A-z ]{1,}$/)[0];
+            firstPlace = data[0].display_name.match(/^[A-z ]{1,}/)[0];
+            lastPlace = data[0].display_name.match(/[A-z ]{1,}$/)[0];
             // if it's in the US, give it a state, not country
             if(lastPlace === " USA"){
                 lastPlace = data[0].display_name.match(/[A-Za-z\s]{1,}(?=,)(?!.*[A-Z][a-z]{1,})/)[0];  //positive lookahead to find the final instance of a state name (i.e. something not in all caps)"
@@ -124,6 +151,35 @@ function getLatLong(num){
             spinnerShowHide(false);
             errorMessage();
         })
+    } else {
+        navigator.geolocation.getCurrentPosition( (position) => {
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+            fetch("https://us1.locationiq.com/v1/reverse.php?key="+geocodeToken2+"&lat="+ latitude +"&lon=" + longitude + "&format=json")
+                .then(response => response.json())
+                .then(data => {
+                    firstPlace = data.address.city;
+                    if(data.address.country_code === "us"){
+                        lastPlace = data.address.state;
+                    } else {
+                        lastPlace = data.address.country;
+                    }
+                    let place =  `${firstPlace}, ${lastPlace}`;
+                    if(current.checked){
+                        getCurrentWeather(num,latitude,longitude,place);
+                    } else {
+                        getHistWeather(num,latitude,longitude,place);
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    alert("Sorry! We couldn't get your location.")
+                } )
+        },
+        function (error) {
+            console.log("The Locator was denied. :(")
+        })
+    }
 }
 // The API call for current weather:
 function getCurrentWeather(num, latitude,longitude,place){
@@ -280,11 +336,14 @@ let historyObjPlace2 = {};
 
 function getHistWeather(placeNum,latitude,longitude, place){  
     // First, clear both history objects:
-    for(item in historyObjPlace1){
-        delete historyObjPlace1[item]
-    };
-    for(item in historyObjPlace2){
-        delete historyObjPlace2[item]
+    if(placeNum===1){
+        for(item in historyObjPlace1){
+            delete historyObjPlace1[item]
+        };
+    } else {
+        for(item in historyObjPlace2){
+            delete historyObjPlace2[item]
+        }
     }
     // Call the weather history:    
     let url = "https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=";
@@ -321,7 +380,6 @@ function histWeatherCall(placeNum,dayNum,url,placeName,unixDate){
                 historyObjPlace2[day]["date"] = date;
                 getHighs(placeNum, day, historyObjPlace2[day].hourly);
             }
-            spinnerShowHide(false);
         })
         .catch(error => {
             if(histCounter===1){
@@ -338,11 +396,9 @@ function getHighs(placeNum, day, arr){
     histCounter++;  
     // each arr is a different day and place.  It has an object with temp, feels_like, and humidity. 
     let highTemp = 0;
-    // let highHumidity = 0;
     let highFeelsLike = 0;
     arr.forEach(hour => {
         highTemp = hour.temp > highTemp ? hour.temp : highTemp;
-        // highHumidity = hour.humidity > highHumidity ? hour.humidity : highHumidity;
         highFeelsLike = hour.feels_like > highFeelsLike ? hour.feels_like : highFeelsLike;
     })
     let noonHumidity = arr[12].humidity;
@@ -367,9 +423,9 @@ function getHighs(placeNum, day, arr){
             feelsLike: highFeelsLike
         }
     }
-    
     // Only create the chart when we've done all 6 API history calls.
     if(histCounter === 6){
+        spinnerShowHide(false);
         makeChart();
     }
 
