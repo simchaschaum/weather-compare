@@ -3,7 +3,6 @@
 const current = document.getElementById("current");
 const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
-const yourLocation = document.getElementById("yourLocation");
 const city1 = document.getElementById("city1"); 
 const city2 = document.getElementById("city2"); 
 // const city1 = {value: "bet shemesh, il"};  // remove after development
@@ -18,6 +17,7 @@ const feelsLike = document.getElementById("feelsLike");
 const all3 = document.getElementById("all3");
 const all3Label = document.getElementById("all3Label");
 //Buttons:
+const yourLocation = document.getElementById("yourLocation");
 const submit = document.getElementById("submit");
 const x = document.getElementById("x");  
 const newComparison = document.getElementById("newComparison");
@@ -47,17 +47,11 @@ const revGeocodeEndPointBegin = "https://us1.locationiq.com/v1/reverse.php?key="
 const revGeocodeEndPointEnd = "&format=json";
 
 let histCounter = 0;
+
 // *** Event Listeners: ***
 submit.addEventListener("click", (e)=>{
     e.preventDefault();
-     if(city1.value === "" || city2.value === ""){
-         title.textContent = "Whoops! Looks like you're missing some info."
-     } else {
-        histCounter = 0;  // this will count six total history API calls; only makes the chart after all 6.
-        
-        getLatLong(1);
-        getLatLong(2);
-     }
+    start();
 })
 x.addEventListener("click",(e)=>{
     e.preventDefault();
@@ -95,9 +89,19 @@ yourLocation.addEventListener("click",(e)=>{
 })
 
 // ***Functions:***
+// Submit:
+function start(){
+    console.log("start starting!");
+    if(city1.value.length === 0 || city2.value.length === 0){
+        title.textContent = "Whoops! Looks like you're missing some info."
+    } else {
+       histCounter = 0;  // this will count six total history API calls; only makes the chart after all 6.
+       getLatLong(1);
+       getLatLong(2);
+    }
+}
+
 // API call for latitude and longitude (for either info:)
-// let latitude;
-// let longitude;
 let revLat, revLon;
 let revData;
 let firstPlace, lastPlace;
