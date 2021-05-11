@@ -144,9 +144,9 @@ function getLatLong(num){
             }
         })
         .catch(error => {
-            console.log(error);
             spinnerShowHide(false);
-            errorMessage();
+            let wrongCity = num===1 ? city1.value : city2.value;
+            errorMessage("loc",wrongCity);
         })
     } else {
         navigator.geolocation.getCurrentPosition( (position) => {
@@ -191,6 +191,10 @@ function getCurrentWeather(num, latitude,longitude,place){
         weatherObj = data;
         dataPrep(num, weatherObj,place);
     })
+    .catch(error => {
+        console.log(error);
+        errorMessage();
+    })
 }
 // Initializing weather object for dataPrep function:
 let weather = {};
@@ -198,9 +202,10 @@ let weather = {};
 function dataPrep(num,weatherObj,place){
     // Error Message:
     if(weatherObj.cod===404){
-        title.textContent = "Sorry! One or both of your cities can't be found."
+        let wrongCity = num===1 ? city1.value : city2.value;
+        errorMessage("loc",wrongCity);
     }else if(weatherObj.cod !== 200){
-        errorMessage();
+        errorMessage("getWeather");
     } else {
         let name = place;
         // Getting temp:
@@ -239,11 +244,14 @@ function display(weather){
     // Making table visible:
     table.classList.remove("hide");
     // Setting the title:
-    let measure = temp.checked ? "Temperature"
-        : humid.checked ? "Humidity" 
-        : feelsLike.checked ? "'Real-Feel' Temperature"
-        : "Temperature, Humidity, and 'Real-Feel' Temp";
-    title.textContent = `Comparing the Current Conditions and ${measure} of ${weather.city1.name} and ${weather.city2.name}`
+    title.textContent = `Comparing ${weather.city1.name} and ${weather.city2.name}`
+
+    // The old way to do the title (too long)
+    // let measure = temp.checked ? "Temperature"
+    //     : humid.checked ? "Humidity" 
+    //     : feelsLike.checked ? "'Real-Feel' Temperature"
+    //     : "Temperature, Humidity, and 'Real-Feel' Temp";
+    // title.textContent = `Comparing the Current Conditions and ${measure} of ${weather.city1.name} and ${weather.city2.name}`
     // Setting table headers:
     tableCitySpace.textContent = "City"
     tableCity1.textContent = weather.city1.name;
@@ -383,7 +391,7 @@ function histWeatherCall(placeNum,dayNum,url,placeName,unixDate){
         })
         .catch(error => {
             if(histCounter===1){
-                errorMessage();
+                errorMessage("getWeather");
                 spinnerShowHide(false);
             }
         })
@@ -503,8 +511,12 @@ function makeChart(){
 
 // Error Message
 let stormIcon;
-function errorMessage(){
-    title.textContent = "Sorry! Something went wrong.";
+function errorMessage(prob,det){
+    if(prob==="loc"){
+        title.textContent = `Sorry! We couldn't find ${det}.`;
+    } else if(prob==="getWeather"){
+        title.textContent = "Sorry! Something went wrong looking up the weather.";
+    }
     if(!document.body.contains(stormIcon)){
         stormIcon = document.createElement("img");
         stormIcon.src = "http://openweathermap.org/img/wn/11d@2x.png";
