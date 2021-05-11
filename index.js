@@ -5,8 +5,6 @@ const histWeather = document.getElementById("histWeather");
 // Inputs for cities:
 const city1 = document.getElementById("city1"); 
 const city2 = document.getElementById("city2"); 
-// const city1 = {value: "bet shemesh, il"};  // remove after development
-// const city2 = {value: "teaneck, nj"};  // remove after development
 // Radio inputs for F/C:
 const farenheit = document.getElementById("farenheit");
 const celcius = document.getElementById("celcius");
@@ -51,7 +49,13 @@ let histCounter = 0;
 // *** Event Listeners: ***
 submit.addEventListener("click", (e)=>{
     e.preventDefault();
-    start();
+    if(city1.value.length === 0 || city2.value.length === 0){
+        title.textContent = "Whoops! Looks like you're missing some info."
+    } else {
+       histCounter = 0;  // this will count six total history API calls; only makes the chart after all 6.
+       getLatLong(1);
+       getLatLong(2);
+    }
 })
 x.addEventListener("click",(e)=>{
     e.preventDefault();
@@ -89,17 +93,6 @@ yourLocation.addEventListener("click",(e)=>{
 })
 
 // ***Functions:***
-// Submit:
-function start(){
-    console.log("start starting!");
-    if(city1.value.length === 0 || city2.value.length === 0){
-        title.textContent = "Whoops! Looks like you're missing some info."
-    } else {
-       histCounter = 0;  // this will count six total history API calls; only makes the chart after all 6.
-       getLatLong(1);
-       getLatLong(2);
-    }
-}
 
 // API call for latitude and longitude (for either info:)
 let revLat, revLon;
@@ -167,6 +160,9 @@ function getLatLong(num){
                         lastPlace = data.address.state;
                     } else {
                         lastPlace = data.address.country;
+                    }
+                    if(lastPlace === " Palestinian Territory" || lastPlace === " Palestine"){
+                        lastPlace = "Israel"   
                     }
                     let place =  `${firstPlace}, ${lastPlace}`;
                     if(current.checked){
