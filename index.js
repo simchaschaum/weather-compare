@@ -177,7 +177,9 @@ function getLatLong(num){
                 } )
         },
         function (error) {
-            console.log("The Locator was denied. :(")
+            console.log("The Locator was denied. :(");
+            spinnerShowHide(false);
+            errorMessage("geoLoc");
         })
     }
 }
@@ -516,6 +518,8 @@ function errorMessage(prob,det){
         title.textContent = `Sorry! We couldn't find ${det}.`;
     } else if(prob==="getWeather"){
         title.textContent = "Sorry! Something went wrong looking up the weather.";
+    } else if(prob==="geoLoc"){
+        title.textContent = "Sorry! We couldn't find your location.";
     }
     if(!document.body.contains(stormIcon)){
         stormIcon = document.createElement("img");
